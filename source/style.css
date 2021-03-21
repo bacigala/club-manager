@@ -1,0 +1,312 @@
+
+/* ---------- ---------- ---------- MOBILE DISPLAY RULES ---------- ---------- ---------- */
+* {
+	font-family: 'Baloo 2', cursive;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	display: grid;
+	grid-template-columns: 10px auto 10px;
+	grid-template-rows: auto auto 10px auto 10px auto 10px 70px auto;
+	grid-template-areas:
+		'	header	header	header'
+		'	nav			nav			nav		'
+		'	.				.				.			'
+		'	.				section	.			'
+		'	.				.				.			'
+		'	.				aside		.		 	'
+		'	.				.				.			'
+		'	footer	footer	footer'
+		' .       .       .     ';
+	background: -moz-linear-gradient(180deg, rgba(8,14,56,1) 0%, rgba(50,64,168,1) 100%);
+	background: -webkit-linear-gradient(180deg, rgba(8,14,56,1) 0%, rgba(50,64,168,1) 100%);
+	background: linear-gradient(180deg, rgba(8,14,56,1) 0%, rgba(50,64,168,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#080e38",endColorstr="#3240a8",GradientType=1);
+	background-color: rgba(50,64,168,1);
+	background-repeat: no-repeat;
+}
+
+/* ---------- ---------- HEADER ---------- ---------- */
+header {
+	grid-area: header;
+	/* background-color: #3240a8; */
+	color: white;
+	padding: 35px 0;
+	text-align: center;
+}
+
+	header h1 a {
+		text-decoration: none;
+		color: white;
+		font-size: 1.2em;
+		font-weight: 700;
+	}
+
+	header h2 {
+		font-size: 1em;
+		font-weight: lighter;
+		color: white;
+	}
+
+/* ---------- ---------- MAIN NAVIGATION ---------- ---------- */
+nav {
+	grid-area: nav;
+}
+
+nav a {
+	display: block;
+	text-decoration: none;
+	text-align: center;
+	color: black;
+	padding: 16px;
+}
+
+	.dropbtn {
+		background-color: #91b3ed;
+	}
+
+	.nav-part:hover .dropbtn {
+		font-weight: bold;
+		color: red;
+	}
+
+	#mobile-menu-button {
+		background-color: white;
+		color: black;
+	}
+
+
+.nav-part {
+	position: relative;
+	display: block;
+}
+
+.dropdown-content, #nav-core {
+	display: none;
+	position: relative;
+	min-width: 160px;
+	z-index: 1;
+	background-color: #bdcce6;
+}
+
+.dropdown-content a:hover {
+	background-color: #e6f2ff;
+}
+
+/* ---------- ---------- SECTION ---------- ---------- */
+section {
+	grid-area: section;
+	background-color: white;
+	padding: 20px;
+}
+
+	section h1 {
+		color: red;
+		font-size: 1.7em;
+		background-color: #f2f2f2;
+		padding: 20px;
+		margin: -20px;
+	}
+
+	section h2 {
+		width: calc(100% - 20px);
+		margin-top: 20px;
+		padding: 10px;
+		font-size: 120%;
+		border-bottom: 5px solid #9fd8ef;
+		color: rgba(8,21,57,1);
+	}
+
+	section p {
+		margin: 10px 0;
+		text-align: justify;
+		padding: 0 5px;
+		text-indent: 50px;
+	}
+
+	section ul {
+		margin: 10px 0 10px 25px; 
+	}
+	
+/* ---------- ---------- ASIDE ---------- ---------- */
+aside {
+	grid-area: aside;
+}
+
+.aside-part {
+	margin-bottom: 10px;
+	padding: 20px;
+}
+
+.aside-part:last-of-type {
+	margin-bottom: 0;
+}
+
+.aside-part-headline {
+	border: 1px solid #d9d9d9;
+	margin: -20px;
+	padding: 20px;
+	font-weight: bold;
+	background-color: #f2f2f2;
+	font-size: 1.2em;
+}
+
+.aside-part-content {
+	margin: 20px -20px -20px -20px;
+	padding: 20px;
+	background-color: white;
+	font-size: 1em;
+}
+
+.aside-part-content p {
+	margin-top: 20px;
+}
+
+.aside-part-content p:first-of-type {
+	margin-top: 0;
+}
+
+/* ---------- ---------- FOOTER ---------- ---------- */
+footer {
+	grid-area: footer;
+	padding: 15px 0;
+	font-weight: lighter;
+	color: white;
+	text-align: center;
+}
+
+/* ---------- ---------- UNIVERSAL ---------- ---------- */
+.clearfix {
+	clear: both;
+}
+
+/* BANNERS */
+.success, .info, .warning, .error {
+	text-indent: 0;
+	padding: 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+.success {
+	background-color: #7aff68;
+	border-left-color: green;
+}
+
+.info { 
+	background-color: #68bfff;
+	border-left-color: blue;
+}
+
+.warning { 
+	background-color: #faff68;
+	border-left-color: yellow;
+}
+
+.error {
+	background-color: #ff6868;
+	border-left-color: red;
+}
+
+
+/* ---------- ---------- ---------- TABLET DISPLAY RULES ---------- ---------- ---------- */
+@media only screen and (min-width: 900px) {
+	body {
+		grid-template-columns: 10px 23% 10px auto 10px;
+		grid-template-rows: 170px auto 10px auto 10px 70px auto;
+		grid-template-areas:
+			'	header		header		header		header		header	'
+			'	nav				nav				nav				nav				nav			'
+			'	. 				.					.					.					.				'
+			'	. 				aside 		.					section		.				'
+			'	. 				.					.					.					.				'
+			'	.			 		footer		footer		footer		.				'
+			' .					.					.					.					.				';
+	}
+
+	nav {
+		text-align: center;
+	}
+	
+	nav a {
+		padding: 5px 20px;
+	}
+	
+	#mobile-menu-button {
+		display: none;
+	}
+	
+	#nav-core {
+		display: block !important;
+		position: relative;
+		background-color: white;
+	}
+	
+	.dropbtn {
+		background-color: transparent;
+		font-weight: bold;
+	}
+
+	.nav-part {
+		display: inline-block;
+	}
+
+	.dropdown-content {
+		position: absolute;
+	}
+
+	.nav-part:hover .nav-part {
+		display: block;
+	}
+	
+	.nav-part:hover .dropbtn {
+		background-color: #bdcce6;
+	}
+}	
+
+/* ---------- ---------- ---------- DESKTOP DISPLAY RULES ---------- ---------- ---------- */
+@media only screen and (min-width: 1150px) {
+	body {
+		grid-template-columns: 10% 23% 20px auto 10%;
+	}
+	
+	nav {
+		text-align: left;
+		margin: 0 10%;
+	}
+}
+
+/* ---------- ---------- ---------- LOGIN FORM ---------- ---------- ---------- */
+#login-section {
+	text-align: center;
+	background-color: transparent;
+}
+
+#login-form {
+	display: inline-block;
+	background-color: transparent;
+	padding: 20px;
+	border-top: 5px solid white;
+	border-bottom: 5px solid white;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+}
+
+#login-form input[type="text"], #login-form input[type="password"] {
+	margin-bottom: 20px;
+	width: auto;
+	display: inline-block;
+	text-align: center;
+	padding: 1px;
+}
+
+#login-form input[type="submit"] {
+	padding: 0 10px;
+	color: white;
+	font-size: 1em;
+	background-color: transparent;
+	border: 1px solid white;
+}
