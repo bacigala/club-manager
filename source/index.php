@@ -1,13 +1,18 @@
 <?php
 	date_default_timezone_set("Europe/Bratislava");
-	include('functions.php');	
-	header_include('Club manager');
-	include('nav.php');	
+	session_start();
+	include('functions.php');
+	include('db.php');
+  include('login-verify.php'); // login check
+	header_include();
+
+	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
+		// user logged-in
+		include('nav.php');	
 ?>
 
 <section>
-    <h1>Welcome to the main page!</h1>
-    
+    <h1>Welcome to the main page!</h1>		
 		<h2>Section1</h2>
     <ul>
         <li>List item1</li>
@@ -26,6 +31,10 @@
 </section>
 
 <?php
-	include('aside.php');
-	include('footer.php');
+		include('index-aside.php');
+		include('footer.php');
+	} else {
+		// user NOT logged-in
+		include('login-form.php');
+	}	
 ?>

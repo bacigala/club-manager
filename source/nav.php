@@ -24,7 +24,7 @@
 
 			<div class="nav-part">
 					<a class="dropbtn" href="">MenuItem3_NoSubMenu</a>
-			</div>
+			</div>					
     </div>
     <p class="clearfix"></p>
-</nav>
+</nav>	
