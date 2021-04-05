@@ -1,5 +1,7 @@
 <script src="nav.js"></script>
 
+<?php if (!$_SESSION['user_is_client']) { ?>
+
 <nav>
     <a id="mobile-menu-button" onclick="dropdownButtonClicked(this)" href="javascript:void(0)"><strong>MENU</strong></a>
     
@@ -28,3 +30,5 @@
     </div>
     <p class="clearfix"></p>
 </nav>	
+
+<?php } else include('nav-client.php'); ?>

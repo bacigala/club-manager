@@ -8,11 +8,12 @@
 
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
 		// user logged-in
-		include('nav.php');	
+		include($_SESSION['user_is_client'] ? 'nav-client.php' : 'nav.php');	
 ?>
 
 <section>
-    <h1>Welcome to the main page!</h1>		
+    <h1>Welcome to the main page!</h1>
+		<div id="sectionh1negativemarginfix"></div>
 		<h2>Section1</h2>
     <ul>
         <li>List item1</li>

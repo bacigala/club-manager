@@ -110,6 +110,10 @@ section {
 		padding: 20px;
 		margin: -20px;
 	}
+	
+	#sectionh1negativemarginfix {
+		margin-top: 30px;
+	}
 
 	section h2 {
 		width: calc(100% - 20px);
@@ -118,6 +122,10 @@ section {
 		font-size: 120%;
 		border-bottom: 5px solid #9fd8ef;
 		color: rgba(8,21,57,1);
+	}
+	
+	section h2:first-of-type {
+		margin-top: 0;
 	}
 
 	section p {
@@ -340,3 +348,53 @@ footer {
 	background-color: transparent;
 	border: 1px solid white;
 }
+
+/* ---------- ---------- ---------- TABLE ---------- ---------- ---------- */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: center;
+}
+
+table tr {
+	border-bottom: 1px solid black;
+}
+
+table tr:nth-child(odd) {
+	background-color: #e6f2ff;
+}
+
+table tr:hover {
+	background-color: #91b3ed;
+}
+
+table th {
+	background: skyblue;
+}
+
+table .warn {
+	color: red;
+	font-size: bold;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

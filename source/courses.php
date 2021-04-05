@@ -13,26 +13,48 @@
 ?>
 
 <section>
-  <h1>Courses</h1>
+  <h1>Prihlasovanie</h1>
+	<div id="sectionh1negativemarginfix"></div>
 	
+	<?php if (isset($_POST['unit_id']) || isset($_SESSION['result_message'])) handle_course_request($mysqli); ?>
+	
+	<h2>Skupiny</h2>
 	<table>
 		<tr>
-			<th>Name</th>
-			<th>Status</th>
+			<th>Názov</th>
+			<th>Obsadenosť</th>
+			<th>Stav</th>
+			<th>Možnosti</th>
 		</tr>
-		<tr>
-			<td>Course A</td>
-			<td>Open</td>
-		</tr>
-		<tr>
-			<td>Course B</td>
-			<td>Closed</td>
-		</tr>
+		<?php get_units_of_client($mysqli, 'course'); ?>
 	</table>
+	
+	<h2>Kurzy</h2>
+	<table>
+		<tr>
+			<th>Názov</th>
+			<th>Obsadenosť</th>
+			<th>Stav</th>
+			<th>Možnosti</th>
+		</tr>
+		<?php get_units_of_client($mysqli, 'event'); ?>
+	</table>	
+	
+	<h2>Udalosti</h2>
+	<table>
+		<tr>
+			<th>Názov</th>
+			<th>Obsadenosť</th>
+			<th>Stav</th>
+			<th>Možnosti</th>
+		</tr>
+		<?php get_units_of_client($mysqli, 'occurence'); ?>
+	</table>
+	
 </section>
 
 <?php
-		include('index-aside.php');
+		include('courses-aside.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in
