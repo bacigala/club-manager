@@ -377,19 +377,18 @@ table .warn {
 	font-size: bold;
 }
 
+/* ---------- ---------- ---------- MAIN FORM (IN SECTION) ---------- ---------- ---------- */
+.master-form fieldset {
+	padding: 0 20px 20px 20px;
+	margin-top: 20px;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+.master-form input, .master-form label, .master-form button, .master-form select {
+	margin-top: 10px;
+	display: block;
+	min-width: 15%;
+	
+}
 
 
 
