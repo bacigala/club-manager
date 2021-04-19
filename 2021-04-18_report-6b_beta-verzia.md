@@ -1,8 +1,8 @@
 # Report no.6,5
 Martin Stolárik\
 Evidencia (športového) klubu\
-https://github.com/bacigala/club-manager\
-https://davinci.fmph.uniba.sk/~stolarik6/club-manager/\
+https://github.com/bacigala/club-manager \
+https://davinci.fmph.uniba.sk/~stolarik6/club-manager/ \
 Klient: user1, heslo1\
 Lektor/účtovník/administrátor: lector1, heslo1\
 
