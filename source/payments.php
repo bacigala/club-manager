@@ -29,7 +29,7 @@
 </section>
 
 <?php
-		include('attendance-aside.php');
+		include('payment-aside-client.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in

@@ -3,7 +3,7 @@
 		<p class="aside-part-headline">Prihlásený používateľ</p>
 		<div class="aside-part-content">
 			<ul>
-				<li><strong>Meno:</strong> <?php echo $_SESSION['user_name'];?></li>
+				<li><strong>Meno:</strong> <?php echo $_SESSION['user_name'] . ' ' . $_SESSION['user_id'];?></li>
 				<li><strong>Priezvisko:</strong> <?php echo $_SESSION['user_surname'];?></li>
 				<li><strong>Admin:</strong> <?php echo !$_SESSION['user_is_client'] ? 'ano' : 'nie';?></li>
 			</ul>

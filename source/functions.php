@@ -724,11 +724,11 @@ function get_all_payments($mysqli) {
 	}
 }
 
-?>
 
-	<!-- PAYMENTS -->
 
-<?php
+	//<!-- PAYMENTS -->
+
+
 
 function get_payment($mysqli, $item_id = 0) {
 	$query  = " SELECT * FROM payment WHERE id = $item_id";
@@ -1020,28 +1020,3 @@ function handle_payment_modify($mysqli) {
 
 
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

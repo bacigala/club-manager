@@ -8,7 +8,7 @@
 
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
 		// user logged-in
-		include($_SESSION['user_is_client'] ? 'nav-client.php' : 'nav.php');	
+		include('nav.php');	
 ?>
 
 <section>

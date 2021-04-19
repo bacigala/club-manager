@@ -17,7 +17,6 @@
 	<div id="sectionh1negativemarginfix"></div>
 	
 	<h2>Záznamy</h2>
-	<p class="warning">Záznamy sú generované na základe kurzov a udalostí, na ktoré ste prihlásený/prihlásená.</p>
 	<table>
 		<tr>
 			<th>Názov</th>

@@ -360,13 +360,13 @@ table tr {
 	border-bottom: 1px solid black;
 }
 
-table tr:nth-child(odd) {
-	background-color: #e6f2ff;
-}
+/* table tr:nth-child(odd) { */
+	/* background-color: #e6f2ff; */
+/* } */
 
-table tr:hover {
-	background-color: #91b3ed;
-}
+/* table tr:hover { */
+	/* background-color: #91b3ed; */
+/* } */
 
 table th {
 	background: skyblue;
@@ -375,6 +375,14 @@ table th {
 table .warn {
 	color: red;
 	font-size: bold;
+}
+
+/* table .no-hover-background-color.tr:hover { */
+	/* background-color: none; */
+/* } */
+
+.head-row {
+	background-color: skyblue;
 }
 
 /* ---------- ---------- ---------- MAIN FORM (IN SECTION) ---------- ---------- ---------- */
@@ -387,7 +395,6 @@ table .warn {
 	margin-top: 10px;
 	display: block;
 	min-width: 15%;
-	
 }
 
 
