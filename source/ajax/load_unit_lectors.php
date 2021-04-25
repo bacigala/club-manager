@@ -1,22 +1,24 @@
 <?php
 
-	session_start();
+    // user needs to be tutor (lector)
+    session_start();
+    if (!isset($_SESSION['user_is_tutor']) || !$_SESSION['user_is_tutor']) {
+        echo 'Na prístup k tejto stránke nemáte oprávnenie.';
+        die();
+    }
+
 	include('../db.php');
 	include('../functions.php');
 
 	// get GET parameters
 	$unit_id = $_REQUEST["unitID"];
-	
-	// build result XML
-	// $dom = new DOMDocument();
-	// $dom->encoding = 'utf-8';
-	// $dom->xmlVersion = '1.0';
-	// $root = $dom->createElement('DBtransaction');
-	
+
+	// query DB
 	$query = "SELECT * FROM unit_account JOIN account  ON (unit_account.account_id  = account.id) WHERE unit_account.unit_id = $unit_id";
 	$result = db_query($mysqli, $query);		
 	$output = '<table>';
 	if (!is_null($result) && $result->num_rows > 0) {
+	    // query ok -> populate table
 		while ($row = $result->fetch_assoc()) {	
 			$output .= '<tr>';
 			$output .= ' <td>' . $row['name'] . ' ' . $row['surname'] . '</td>';
@@ -28,21 +30,22 @@
 			$output .= '</tr>';
 		}
 	} else {
-		// option to add lector
+	    // no lectors found
 		$output .= '<tr>';
 		$output .= ' <td colspan="2">No lectors found</td>';
 		$output .= '</tr>';
 	}
 	
-		// option to add lector
-		$output .= '<tr>';
-		$output .= ' <td colspan="2"><form>';
-		$output .= ' <input type="text" id="name" name="name" value="">';
-		$output .= '  Editor <input type="checkbox" id="is_editor" name="is_editor" value="true">';
-		$output .= '  <input type="button" name="" value="Pridat" onClick="add_unit_lector(this, \'' . $unit_id . '\', \'manual\');">';
-		$output .= ' </form></td>';
-		$output .= '</tr>';
+    // option to add lector - autocomplete
+    $output .= '<tr>';
+    $output .= ' <td colspan="2">';
+    $output .=   '<form autocomplete="off">';
+    $output .=    '<div class="autocomplete">';
+    $output .=     '<input class="lectorSearch' . $unit_id . '" type="text" name="name" placeholder="Ferko">';
+    $output .=    '</div>';
+    $output .=   '</form>';
+    $output .=  '</td>';
+    $output .= '</tr>';
 	
 	$output .= '</table>';
 	echo $output;
-?>

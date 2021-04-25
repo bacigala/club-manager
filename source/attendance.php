@@ -4,7 +4,7 @@
 	session_start();
 	include('functions.php');
 	include('db.php');
-  include('login-verify.php'); // login check
+    include('login-verify.php'); // login check
 	header_include();
 
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
@@ -22,7 +22,6 @@
 			<th>Názov</th>
 			<th>Dátum a čas</th>
 			<th>Stav</th>
-			<th>Možnosti</th>
 		</tr>
 		<?php get_attendance_of_client($mysqli); ?>
 	</table>

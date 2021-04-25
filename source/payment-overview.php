@@ -4,13 +4,13 @@
 	session_start();
 	include('functions.php');
 	include('db.php');
-  include('login-verify.php'); // login check
+    include('login-verify.php'); // login check
 	header_include();
 
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
 		// user logged-in
-		include('nav.php');
-		
+		nav_include(true);
+
 		if (!isset($_SESSION['user_is_accountant']) || !$_SESSION['user_is_accountant']) {
 			echo 'Na prístup k tejto stránke nemáte oprávnenie.';
 			die();
@@ -21,6 +21,7 @@
 <section class="full-width-section">
   <h1>Platby - prehľad</h1>
 	<div id="sectionh1negativemarginfix"></div>
+    <?php session_result_echo(); ?>
 	<table>
 		<tr>
 			<th>Vytvorené</th>
@@ -37,10 +38,10 @@
 </section>
 
 <?php
-		//include('payment-aside.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in
 		include('login-form.php');
 	}	
 ?>
+

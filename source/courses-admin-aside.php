@@ -11,9 +11,8 @@
 	<div class="aside-part">	
 		<p class="aside-part-headline">Info</p>
 		<div class="aside-part-content">
-			<p>Tu sa môžete prihlásiť na dostupné kurzy a udalosti.</p>
-			<p>Niektoré udalosti môžu vyžadovať zaslanie žiadosti, ktorú Vám schváli jej organizátor.</p>
-			<p>V prípade pozvania na udalosť, môžete pozvánku prijať alebo odmietnuť.</p>
+			<p>Tu môžete spravovať dostupné kuryz a udalosti.</p>
+			<p>Kliknite na kurz/skupinu/udalosť pre zobrazenie detailov.</p>
 		</div>
 	</div>
 </aside>

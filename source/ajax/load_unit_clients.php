@@ -1,60 +1,67 @@
 <?php
 
-	session_start();
-	include('../db.php');
-	include('../functions.php');
+    // user needs to be tutor (lector)
+    session_start();
+    if (!isset($_SESSION['user_is_tutor']) || !$_SESSION['user_is_tutor']) {
+        echo 'Na prístup k tejto stránke nemáte oprávnenie.';
+        die();
+    }
 
-	// get GET parameters
-	$unit_id = $_REQUEST["unitID"];
-	
-	$query = "SELECT * FROM unit_client JOIN client  ON (unit_client.client_id = client.id) WHERE unit_client.unit_id = $unit_id AND date_leave IS NULL ";
+    include('../db.php');
+    include('../functions.php');
+
+    // get GET parameters
+    $unit_id = $_REQUEST["unitID"];
+
+    // query DB
+	$query = "SELECT * FROM unit_client JOIN client ON (unit_client.client_id = client.id) WHERE unit_client.unit_id = $unit_id AND date_leave IS NULL ";
 	$query .= " AND status<>'retract' AND status<>'restrict' ORDER BY status ASC";
-	$result = db_query($mysqli, $query);		
+	$result = db_query($mysqli, $query);
+    $output = '<table>';
 	if (!is_null($result) && $result->num_rows > 0) {
-		$output = '<table>';
+        // query ok -> populate table
 		while ($row = $result->fetch_assoc()) {	
 			$output .= '<tr>';
 			$output .= ' <td>' . $row['name'] . ' ' . $row['surname'] . ' (od ' . date_format(date_create($row['date_join']), "d-m-Y") . ')</td>';
 			$output .= ' <td>' . $row['status'] . '</td>';
 			$output .= ' <td><form>';
 			
-			// show oprions according to status
-			if ($row['status'] == 'manual' || $row['status'] == 'accept' || $row['status'] == 'approve') {
-				$output .= '  <input type="button" name="" value="Vyhodit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
-			}
-			if ($row['status'] == 'request') {
-				$output .= '  <input type="button" name="" value="Povolit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'approve\');">';
-				$output .= '  <input type="button" name="" value="Zamietnut" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'restrict\');">';
-			}
-			if ($row['status'] == 'invite') {
-				$output .= '  <input type="button" name="" value="Stiahnut pozvanku" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
+			// show options according to status
+            switch ($row['status']) {
+                case 'manual':
+                case 'accept':
+                case 'approve':
+                    $output .= '<input type="button" name="" value="Vyhodit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
+                    break;
+                case 'request':
+    				$output .= '<input type="button" name="" value="Povolit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'approve\');">';
+	    			$output .= '<input type="button" name="" value="Zamietnut" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'restrict\');">';
+		            break;
+                case 'invite':
+                    $output .= '<input type="button" name="" value="Stiahnut pozvanku" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
+                    break;
 			}
 			
 			$output .= ' </form></td>';
 			$output .= '</tr>';
-		
-		
-			// $record = $dom->createElement('record');
-				// $name = $dom->createElement('name', $row['name'] . $row['surname']);
-					// $record->appendChild($name);
-				// $editor = $dom->createElement('editor', $row['is_editor']);
-					// $record->appendChild($editor);
-				// $root->appendChild($record);
 		}
-		// optiopn to create new client (invitation / manual)
-		
-		
-		$output .= '</table>';
-		echo $output;
 	} else {
-		//error
-		echo 'no clients';
-		// $child_node_result_status = $dom->createElement('status', 'ERR');
-		// $root->appendChild($child_node_result_status);
-		// $child_node_result_message = $dom->createElement('message', 'ERROR');
-		// $root->appendChild($child_node_result_message);
-		// $dom->appendChild($root);
+		// error || no clients found
+        $output .= '<tr>';
+        $output .= ' <td colspan="2">No clients found</td>';
+        $output .= '</tr>';
 	}
-	
-	//echo $dom->saveXml();
-?>
+
+    // option to add/invite client
+    $output .= '<tr>';
+    $output .= ' <td colspan="2">';
+    $output .=   '<form autocomplete="off">';
+    $output .=    '<div class="autocomplete">';
+    $output .=     '<input class="clientSearch' . $unit_id . '" type="text" name="name" placeholder="Ferko">';
+    $output .=    '</div>';
+    $output .=   '</form>';
+    $output .=  '</td>';
+    $output .= '</tr>';
+
+    $output .= '</table>';
+    echo $output;

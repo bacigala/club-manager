@@ -1,9 +1,13 @@
 <?php
 
+/**
+ * Create html page header.
+ * @param string $headline text to be shown as browser tab name
+ */
 function header_include($headline = 'Club manager') {
 ?>
 	<!DOCTYPE html>
-	<html>
+	<html lang="sk">
 		<head>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=0.86, maximum-scale=3">
@@ -13,9 +17,7 @@ function header_include($headline = 'Club manager') {
 			<link rel="icon" type="image/png" href="images/favicon.ico">
 			<title><?php echo $headline; ?></title>
 		</head>
-		<body>		
-
-		
+		<body>
 			<header>
 				<!-- if user is logged-in diplay logout option -->
 				<?php if (isset($_SESSION['has_user']) && $_SESSION['has_user']) { ?>
@@ -32,21 +34,127 @@ function header_include($headline = 'Club manager') {
 <?php
 }
 
-function post_escaped($index) {
-	if (!isset($_POST[$index])) return '';
-	return addslashes(trim(strip_tags($_POST[$index])));
+/**
+ * Create html navigation.
+ * @param false $full_width
+ */
+function nav_include($full_width = false) {
+?>
+    <script src="nav.js"></script>
+    <nav <?php if ($full_width) echo 'class="full-width"'; ?>>
+        <a id="mobile-menu-button" onclick="dropdownButtonClicked(this)" href="javascript:void(0)"><strong>MENU</strong></a>
+            <div id="nav-core">
+                <?php if ($_SESSION['user_is_client']) {  // CLIENT ?>
+                <div class="nav-part">
+                    <a class="dropbtn" href="courses.php">Skupiny a udalosti</a>
+                </div>
+                <div class="nav-part">
+                    <a class="dropbtn" href="attendance.php">Dochádzka</a>
+                </div>
+                <div class="nav-part">
+                    <a class="dropbtn" href="payments.php">Poplatky</a>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['user_is_accountant']) { // ACCOUNTANT ?>
+                <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
+                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Platby</a>
+                        <div class="dropdown-content">
+                                <a href="payment-item-overview.php">Prehľad položiek</a>
+                                <a href="payment-item-modify.php">Nová položka</a>
+                                <a href="payment-overview.php">Prehľad platieb</a>
+                                <a href="payment-modify.php">Nová platba</a>
+                        </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['user_is_tutor']) {  // TUTOR (LECTOR) ?>
+                <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
+                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Skupiny a udalosti</a>
+                        <div class="dropdown-content">
+                                <a href="courses-admin-overview.php">Prehľad</a>
+                                <!-- <a href="payment-item-modify.php">Nový</a> -->
+                        </div>
+                </div>
+                <?php } ?>
+
+                <?php if ($_SESSION['user_is_admin']) { // ADMINISTRATOR ?>
+                <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
+                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Použivatelia</a>
+                        <div class="dropdown-content">
+                                <a href="">Prehľad</a>
+                                <a href="">Nový</a>
+                        </div>
+                </div>
+                <?php } ?>
+
+        </div>
+        <p class="clearfix"></p>
+    </nav>
+
+<?php
 }
 
+/**
+ * Retrieve escaped value from $_POST array.
+ * @param $key string key in $_POST array
+ * @return string escaped value $_POST[{$key}]
+ */
+function post_escaped($key) {
+	if (!isset($_POST[$key])) return '';
+	return addslashes(trim(strip_tags($_POST[$key])));
+}
+
+/**
+ * Query database.
+ * @param $mysqli mysqli
+ * @param $query string
+ * @return mysqli_result|null result of query OR null on error
+ */
 function db_query($mysqli, $query) {
-	if (!$mysqli->connect_errno) {		
-		if ($result = $mysqli->query($query)) {
+	if (!$mysqli->connect_errno) {
+        $result = $mysqli->query($query);
+		if ($result) {
 			return $result;
 		} else {
 			echo $mysqli->error;
-			return NULL;
 		}
 	}
+    return NULL;
 }
+
+/**
+ * Sets result of the operation, next page may display the result...
+ * @param $type string success / warning / error
+ * @param  string message to display
+ */
+function session_result($type, $message) {
+    $_SESSION['result_message_type'] = $type;
+    $_SESSION['result_message'] =  $message;
+}
+
+/**
+ * Echo result stored in $_SESSION.
+ * @param bool $unset true if result should be unset after echo
+ */
+function session_result_echo($unset = true) {
+    // echo the message
+    if (isset($_SESSION['result_message']) && $_SESSION['result_message'] != '') {
+        $message = $_SESSION['result_message'];
+        $message_type = isset($_SESSION['result_message_type']) ? $_SESSION['result_message_type'] : 'info';
+        echo '<p class="' . $message_type . '">' . $message . '</p>';
+    }
+    // unset values
+    if ($unset) {
+        unset($_SESSION['result_message']);
+        unset($_SESSION['result_message_type']);
+    }
+}
+
+
+
+
+
 
 function record_payments($mysqli, $unit_id) {
 	$answer = true;
@@ -61,7 +169,6 @@ function record_payments($mysqli, $unit_id) {
 				$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať. (Chyba pri vytváraní platby.)';
 				$answer = false;
 			}
-			//$result2->free();
 		} else {
 			// assign all payments valid in current time
 			while ($row = $result->fetch_assoc()) {
@@ -72,24 +179,19 @@ function record_payments($mysqli, $unit_id) {
 					$answer = false;
 					break;
 				}
-				//$result2->free();
 			}
 		}
+        $result->free();
 	} else {
 		$_SESSION['result_message_type'] = 'error';
 		$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať. (Chyba pri vytváraní platby. NULL)';
 		$answer = false;
 	}
-	$result->free();
 	return $answer;
 }
 
 
-
-
 function get_units_of_client($mysqli, $type) {
-	
-	// GET COURSES USER IS SIGNED FOR / INVITED TO / REQUESTED INVITE
 	$query = "SELECT unit.id, unit.name, unit.registration, unit.max_clients, unit_client.date_leave, unit_client.status, no_clients, unit_client.id AS 'unit_client_id' FROM unit JOIN unit_client ON (unit.id = unit_client.unit_id) JOIN client ON (unit_client.client_id = client.id) LEFT JOIN unit_clients ON (unit.id = unit_clients.unit_id)";
 	$query .= " WHERE ";	
 	$query .= " client.id = " . $_SESSION['user_id'] . " AND (date_leave IS NULL OR date_leave >= NOW()) ";
@@ -220,9 +322,9 @@ function get_attendance_of_client($mysqli) {
 			$output  = '<tr>';
 			$output .= '<td>' . $row['name'] . '</td>';
 			$output .= '<td>' . date_format(date_create($row['start_datetime']), "d.m.Y H:i") . ' - ' . date_format(date_create($row['end_datetime']), "d.m.Y H:i") . '</td>';
-			$output .= '<td>' . ($row['present'] ? 'Prítomný(á)' : 'Neprítomný(á)') . '</td>';
+			$output .= '<td' . ($row['present'] ? '' : ' class="warn"') . '>' . ($row['present'] ? 'Prítomný(á)' : 'Neprítomný(á)') . '</td>';
 			
-			$output .= '<td>' . 'OPTIONS' . '</td></tr>';
+			$output .= '</tr>';
 			echo $output;
 		}
 		$result->free();
@@ -264,19 +366,23 @@ function handle_course_request($mysqli) {
 		try {
 			$mysqli->begin_transaction();
 			switch ($request_type) {
-				case 'accept':	
-					// check available capacity
-					if (!check_capacity($mysqli, $unit_id)) {
-						$mysqli->rollback();
-						break;
-					}
-					
-					// record payment obligation
-					if (!record_payments($mysqli, $unit_id)) {
-						$mysqli->rollback();
-						break;					
-					}
-				case 'refuse':
+                case 'accept':
+                case 'refuse':
+                    if ($request_type == 'accept') {
+                        // check available capacity
+                        if (!check_capacity($mysqli, $unit_id)) {
+                            $mysqli->rollback();
+                            $_SESSION['result_message_type'] = 'error';
+                            $_SESSION['result_message'] = 'Nemožno sa prihlásiť, limit účastníkov bol naplnený.';
+                            break;
+                        }
+
+                        // record payment obligation
+                        if (!record_payments($mysqli, $unit_id)) {
+                            $mysqli->rollback();
+                            break;
+                        }
+                    }
 					// try to update invitation -> accept / refuse					
 					$query = "UPDATE unit_client SET status='" . $request_type . "', date_join=NOW() WHERE unit_id=" . $unit_id . " AND id=" . $unit_client_id . " AND client_id=" . $_SESSION['user_id'] . " AND status='invite'";
 					if (!($result = $mysqli->query($query))) {
@@ -303,12 +409,16 @@ function handle_course_request($mysqli) {
 					$_SESSION['result_message_type'] = 'success';
 					$_SESSION['result_message'] = 'Žiadosť o prihlásenie bola stiahnutá.';
 					break;
-				case 'join':			
+				case 'join':
+
 					// check available capacity
 					if (!check_capacity($mysqli, $unit_id)) {
 						$mysqli->rollback();
+                        $_SESSION['result_message_type'] = 'error';
+                        $_SESSION['result_message'] = 'Nemožno sa prihlásiť, limit účastníkov bol naplnený.';
 						break;
 					}
+
 					// check whether unit is opened for registration and user is not already assigned to it
 					$query = "SELECT * FROM unit WHERE id=" . $unit_id . " AND registration='open'";
 					$query .= " AND NOT EXISTS (SELECT 1 FROM unit_client WHERE unit_client.unit_id = unit.id AND unit_client.client_id = " . $_SESSION['user_id'] . " AND date_join <= NOW() AND (date_leave IS NULL OR date_leave >= NOW()))";
@@ -317,7 +427,8 @@ function handle_course_request($mysqli) {
 						$_SESSION['result_message'] = 'Nepodarillo sa prihlásiť. Registrácia nie je otvorená.';
 						$mysqli->rollback();
 						break;
-					}					
+					}
+
 					// create join record
 					$query = "INSERT INTO unit_client SET unit_id=" . $unit_id . ", client_id=" . $_SESSION['user_id'] . ", author_id=1, date_join=NOW(), status='manual'";
 					if (!($result = $mysqli->query($query))) {
@@ -326,13 +437,17 @@ function handle_course_request($mysqli) {
 						$mysqli->rollback();
 						break;
 					}
-					
+
 					// record payment obligation
-					if (!record_payments($mysqli, $unit_id)) {
-						$mysqli->rollback();
+					if (!record_payments($mysqli, $unit_id)) { // wtf? stops execution
+					    $mysqli->rollback();
+                        $_SESSION['result_message_type'] = 'error';
+                        $_SESSION['result_message'] = 'Problem pri uctovani platby.';
+
 						break;					
 					}
-					
+
+
 					$mysqli->commit();
 					$_SESSION['result_message_type'] = 'success';
 					$_SESSION['result_message'] = 'Prihlásenie bolo úspešné.';
@@ -375,21 +490,14 @@ function handle_course_request($mysqli) {
 			$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať. (exception)' . $exception;
 		} finally {
 			// restrict form resend by refresh, clear $_POST
-			$_SESSION['result_message'] .= $mysqli->error;
-			//header("Location: courses.php");
-			//exit();
+			//$_SESSION['result_message'] .= $mysqli->error;
+			header("Location: courses.php");
+			exit();
 		}
 	}
-	
-	if (isset($_SESSION['result_message'])) {
-		$message = $_SESSION['result_message'];
-		$message_type = isset($_SESSION['result_message_type']) ? $_SESSION['result_message_type'] : 'info';
-		
-		unset($_SESSION['result_message']);
-		unset($_SESSION['result_message_type']);
-		
-		echo '<p class="' . $message_type . '">' . $message . '</p>' ;
-	}
+
+	// echo result of previous operation (info banner)
+	session_result_echo();
 }
 
 function get_payment_list($mysqli) {
@@ -437,15 +545,15 @@ function get_item_list($mysqli) {
 
 function get_item($mysqli, $item_id = 0) {
 	$query  = " SELECT * FROM item WHERE id = $item_id";
-	$result = db_query($mysqli, $query);		
-	if (!is_null($result) && $result->num_rows > 0) {				
-		while ($row = $result->fetch_assoc()) {
-			return $row;
-		}
-		$result->free();
-	} else {
-		return false;
-	}
+	$result = db_query($mysqli, $query);
+	$return_value = '';
+	if (!is_null($result) && $result->num_rows > 0) {
+        if ($row = $result->fetch_assoc()) {
+            $return_value = $row;
+        }
+        $result->free();
+    }
+	return $return_value;
 }
 
 function get_unit_options($mysqli, $selected = false) {
@@ -582,10 +690,8 @@ function handle_item_modify($mysqli) {
 	
 	$item_id = 0;
 	if (isset($_POST['item_id'])) $item_id = intval(post_escaped('item_id'));
-	
-	$data = false;
-	
-	if ($request_type) {
+
+    if ($request_type) {
 		
 		// try to fulfill user request
 		//$unit_id = post_escaped('unit_id');
@@ -606,7 +712,7 @@ function handle_item_modify($mysqli) {
 					$mysqli->begin_transaction();
 					$query = "INSERT INTO item SET author_id=" . $_SESSION['user_id'];
 					foreach ($data AS $key => $value) $query .= ", $key='$value'";
-					if (!($result = $mysqli->query($query))) {
+					if (!$mysqli->query($query)) {
 						$mysqli->rollback();
 						$_SESSION['result_message_type'] = 'error';
 						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
@@ -634,7 +740,7 @@ function handle_item_modify($mysqli) {
 					$query = "UPDATE item SET author_id=" . $_SESSION['user_id'];
 					foreach ($data AS $key => $value) $query .= ", $key='$value'";
 					$query .= ' WHERE id=' . $item_id ;
-					if (!($result = $mysqli->query($query))) {
+					if (!$mysqli->query($query)) {
 						$mysqli->rollback();
 						$_SESSION['result_message_type'] = 'error';
 						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
@@ -649,7 +755,7 @@ function handle_item_modify($mysqli) {
 					// delete item					
 					$mysqli->begin_transaction();
 					$query = "DELETE FROM item WHERE id=" . $item_id ;
-					if (!($result = $mysqli->query($query))) {
+					if (!$mysqli->query($query)) {
 						$mysqli->rollback();
 						$_SESSION['result_message_type'] = 'error';
 						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
@@ -667,12 +773,10 @@ function handle_item_modify($mysqli) {
 			// set result message
 			$_SESSION['result_message_type'] = 'error';
 			$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať. (exception)' . $exception;
-			
 		} finally {
 			$_SESSION['result_message'] .= $mysqli->error;
 			header("Location: payment-item-modify.php");
 			exit();
-			
 		}
 	}
 	
@@ -688,7 +792,7 @@ function handle_item_modify($mysqli) {
 	}
 	
 	if (isset($_SESSION['error'])) {
-		foreach ($_SESSION['error'] AS $key => $value) {
+		foreach ($_SESSION['error'] AS $value) {
 			echo '<p class="error">' . $value . '</p>' ;
 		}
 		unset($_SESSION['error']);
@@ -699,11 +803,13 @@ function handle_item_modify($mysqli) {
 }
 
 function get_all_payments($mysqli) {
+    $highlight_pid = isset($_GET['pid']) ? $_GET['pid'] : 0;
+
 	$query  = " SELECT payment.id, payment.create_datetime, client.name, client.surname, item.name AS 'item_name', payment.amount, payment.unit_price, payment.pay_datetime FROM payment JOIN item ON (payment.item_id = item.id) JOIN client ON (client.id = payment.client_id) ORDER BY create_datetime DESC";
 	$result = db_query($mysqli, $query);		
 	if (!is_null($result) && $result->num_rows > 0) {
 		while ($row = $result->fetch_assoc()) {
-			$output  = '<tr>';
+			$output  = '<tr' . ($highlight_pid == $row['id'] ? ' class="highlight"' : '') . '>';
 			$output .= '<td>' . date_format(date_create($row['create_datetime']), "d.m.Y H:i") . '</td>';
 			$output .= '<td>' . $row['name'] . ' ' . $row['surname'] . '</td>';
 			$output .= '<td>' . $row['item_name'] . '</td>';
@@ -723,300 +829,5 @@ function get_all_payments($mysqli) {
 		$result->free();
 	}
 }
-
-
-
-	//<!-- PAYMENTS -->
-
-
-
-function get_payment($mysqli, $item_id = 0) {
-	$query  = " SELECT * FROM payment WHERE id = $item_id";
-	$result = db_query($mysqli, $query);		
-	if (!is_null($result) && $result->num_rows > 0) {				
-		while ($row = $result->fetch_assoc()) {
-			return $row;
-		}
-		$result->free();
-	} else {
-		return false;
-	}
-}
-
-// function get_unit_options($mysqli, $selected = false) {
-	// $query  = "SELECT unit.id, unit.name, unit.type FROM unit ORDER BY type ASC, name ASC";
-	// $result = db_query($mysqli, $query);		
-	// if (!is_null($result) && $result->num_rows > 0) {				
-		// while ($row = $result->fetch_assoc()) {
-			// $type = '';
-			// switch ($row['type']) {
-				// case 'course':
-					// $type = ' (kurz)';
-					// break;
-				// case 'event':
-				// case 'singleevent':
-					// $type = ' (udalosť)';
-					// break;
-				// case 'occurrence':
-					// $type = ' (výskyt)';
-					// break;					
-			// }
-			
-			// $output = '<option value="' . $row['id'] . '" ';
-			// if ($selected && $selected == $row['id']) $output .= 'selected';
-			// $output .= '>' . $row['name'] . $type . '</option>';
-		
-			// echo $output;
-		// }
-		// $result->free();
-	// }
-// }
-
-function get_item_options($mysqli, $selected = false) {
-	$query  = "SELECT id, name FROM item ORDER BY name ASC";
-	$result = db_query($mysqli, $query);		
-	if (!is_null($result) && $result->num_rows > 0) {				
-		while ($row = $result->fetch_assoc()) {		
-			$output = '<option value="' . $row['id'] . '" ';
-			if ($selected && $selected == $row['id']) $output .= 'selected';
-			$output .= '>' . $row['name'] . $type . '</option>';
-			echo $output;
-		}
-		$result->free();
-	}
-}
-
-function get_client_options($mysqli, $selected = false) {
-	$query  = "SELECT id, name FROM client ORDER BY name ASC";
-	$result = db_query($mysqli, $query);		
-	if (!is_null($result) && $result->num_rows > 0) {				
-		while ($row = $result->fetch_assoc()) {		
-			$output = '<option value="' . $row['id'] . '" ';
-			if ($selected && $selected == $row['id']) $output .= 'selected';
-			$output .= '>' . $row['name'] . $type . '</option>';
-			echo $output;
-		}
-		$result->free();
-	}
-}
-
-function get_payment_form($mysqli, $type = 'create', $form_data = false) {
-	// get item id
-	if (isset($_POST['request_type'])) $type = post_escaped('request_type');
-	if (!$form_data) {
-		if (isset($_POST['payment_id'])) {
-			if ($item = get_payment($mysqli, post_escaped('payment_id'))) {
-				// display form for item modification
-				$form_data = $item;
-			} else {
-				// requested item does not exist
-				echo "<p class='error'>Requested item does not exist.</p>";
-				return;
-			}	
-		}
-	}
-	
-	// display form
-	?>
-	<form method="post" class="master-form">
-		<fieldset>
-			<legend>Položka</legend>
-			
-			<input type="hidden" name="payment_id" value="<?php if (isset($_POST['payment_id'])) echo post_escaped('payment_id'); ?>"/>
-			
-			<label for="item_id">Položka</label>
-			<select id="item_id" name="item_id">
-				<?php
-					$item_id = isset($form_data['item_id']) ? $form_data['item_id'] : false;
-					get_item_options($mysqli, $item_id);
-				?>
-			</select>
-
-			<label for="amount" class="required">Počet</label>
-			<input type="number" name="amount" id="amount" value="<?php if (isset($form_data['amount'])) echo $form_data['amount']; ?>" min="1" step="1">
-		</fieldset>
-		
-		<fieldset>
-			<legend>Platca</legend>
-			
-			<label for="client_id">Klient</label>
-			<select id="client_id" name="client_id">
-				<?php
-					$unit_id = isset($form_data['client_id']) ? $form_data['client_id'] : false;
-					get_client_options($mysqli, $unit_id);
-				?>
-			</select>
-		</fieldset>
-		
-		<fieldset>
-			<legend>Potvrdenie</legend>
-			<?php if ($type == 'create') { ?>
-				<button name="item_create" type="submit">Vytvoriť platbu</button>
-				<button name="item_cancel" type="submit">Zrušiť</button>
-			<?php } ?>
-			<?php if ($type == 'modify') { ?>
-				<button name="item_modify" type="submit">Uložiť zmeny</button>
-				<button name="item_cancel" type="submit">Zrušiť zmeny</button>
-				<button name="item_delete" type="submit">Odstrániť platbu</button>
-			<?php } ?>				
-		</fieldset>
-	</form>
-	<?php	
-}
-
-function get_payment_form_data() {
-	
-	// get & verify data
-	$data = array();
-	$error = array();
-	
-	if (isset($_POST['item_id'])) {
-		$data['item_id'] = post_escaped('item_id');
-		if ($data['item_id'] < 1) $error['item_id'] = 'Prosím zvoľte položku.';
-	}
-	
-	if (isset($_POST['client_id'])) {
-		$data['client_id'] =  intval(post_escaped('client_id'));
-		if ($data['client_id'] < 1) $error['client_id'] = 'Prosím zvoľte platcu.';
-	}
-	
-	if (isset($_POST['amount'])) {
-		$data['amount'] =  intval(post_escaped('amount'));
-		if ($data['amount'] < 1) $error['client_id'] = 'Prosím zvoľte počet.';
-	}
-	
-
-	// return data
-	$_SESSION['error'] = $error;
-	return $data;
-}
-
-function handle_payment_modify($mysqli) {
-	$request_type = '';
-	if (isset($_POST['item_create'])) $request_type = 'create';
-	if (isset($_POST['item_cancel'])) $request_type = 'cancel';
-	if (isset($_POST['item_modify'])) $request_type = 'modify';
-	if (isset($_POST['item_delete'])) $request_type = 'delete';
-	
-	$payment_id = 0;
-	if (isset($_POST['payment_id'])) $payment_id = intval(post_escaped('payment_id'));
-	
-	$data = false;
-	
-	if ($request_type) {
-		
-		// try to fulfill user request
-		//$unit_id = post_escaped('unit_id');
-		//$request_type = post_escaped('request_type'); // accept, refuse, retract, join, request
-		//$unit_client_id = post_escaped('unit_client_id');
-		
-		try {
-			switch ($request_type) {
-				case 'create':	
-					// create item
-					$data = get_payment_form_data();
-					if (isset($_SESSION['error']) && !empty($_SESSION['error'])) {
-						$_SESSION['result_message_type'] = 'error';
-						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
-						break;
-					}
-					
-					$mysqli->begin_transaction();
-					$query = "INSERT INTO payment SET create_datetime=NOW(), author_id=" . $_SESSION['user_id'];
-					foreach ($data AS $key => $value) $query .= ", $key='$value'";
-					if (!($result = $mysqli->query($query))) {
-						$mysqli->rollback();
-						$_SESSION['result_message_type'] = 'error';
-						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
-						break;
-					}
-					
-					$mysqli->commit();
-					$_SESSION['result_message_type'] = 'success';
-					$_SESSION['result_message'] = 'Platba bola vytvorená.';
-					break;
-				case 'cancel':
-					$_SESSION['result_message_type'] = 'warning';
-					$_SESSION['result_message'] = 'Platba nebola upravená.';
-					break;					
-				case 'modify':
-					// modify item
-					$data = get_payment_form_data();
-					if ((isset($_SESSION['error']) && !empty($_SESSION['error'])) || !$payment_id) {
-						$_SESSION['result_message_type'] = 'error';
-						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
-						break;
-					}
-					
-					$mysqli->begin_transaction();
-					$query = "UPDATE payment SET author_id=" . $_SESSION['user_id'];
-					foreach ($data AS $key => $value) $query .= ", $key='$value'";
-					$query .= ' WHERE id=' . $payment_id ;
-					if (!($result = $mysqli->query($query))) {
-						$mysqli->rollback();
-						$_SESSION['result_message_type'] = 'error';
-						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
-						break;
-					}
-					
-					$mysqli->commit();
-					$_SESSION['result_message_type'] = 'success';
-					$_SESSION['result_message'] = 'Platba bola upravená.';
-					break;
-				case 'delete':			
-					// delete item					
-					$mysqli->begin_transaction();
-					$query = "DELETE FROM payment WHERE id=" . $payment_id ;
-					if (!($result = $mysqli->query($query))) {
-						$mysqli->rollback();
-						$_SESSION['result_message_type'] = 'error';
-						$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať.';
-						break;
-					}
-					
-					$mysqli->commit();
-					$_SESSION['result_message_type'] = 'success';
-					$_SESSION['result_message'] = 'Platba bola odstránená.';
-					break;				
-			}	
-		} catch (mysqli_sql_exception $exception) {
-			// error
-			$mysqli->rollback();
-			// set result message
-			$_SESSION['result_message_type'] = 'error';
-			$_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať. (exception)' . $exception;
-			
-		} finally {
-			$_SESSION['result_message'] .= $mysqli->error;
-			header("Location: payment-modify.php");
-			exit();
-			
-		}
-	}
-	
-	
-	if (isset($_SESSION['result_message']) && $_SESSION['result_message'] != '') {
-		$message = $_SESSION['result_message'];
-		$message_type = isset($_SESSION['result_message_type']) ? $_SESSION['result_message_type'] : 'info';
-		
-		unset($_SESSION['result_message']);
-		unset($_SESSION['result_message_type']);
-		
-		echo '<p class="' . $message_type . '">' . $message . '</p>' ;
-	}
-	
-	if (isset($_SESSION['error'])) {
-		foreach ($_SESSION['error'] AS $key => $value) {
-			echo '<p class="error">' . $value . '</p>' ;
-		}
-		unset($_SESSION['error']);
-	}
-	
-	
-	get_payment_form($mysqli);
-}
-
-
-
 
 ?>

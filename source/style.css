@@ -294,6 +294,14 @@ footer {
 		text-align: left;
 		margin: 0 10%;
 	}
+
+	.nav-part:first-of-type {
+		margin-left: calc((10/8 * 23%) + 10px);
+	}
+
+	nav.full-width .nav-part:first-of-type {
+		margin-left: 0;
+	}
 }
 
 /* ---------- ---------- ---------- LOGIN FORM ---------- ---------- ---------- */
@@ -374,7 +382,7 @@ table th {
 
 table .warn {
 	color: red;
-	font-size: bold;
+	font-size: medium;
 }
 
 /* table .no-hover-background-color.tr:hover { */
@@ -383,6 +391,10 @@ table .warn {
 
 .head-row {
 	background-color: skyblue;
+}
+
+.highlight {
+	background-color: sandybrown;
 }
 
 /* ---------- ---------- ---------- MAIN FORM (IN SECTION) ---------- ---------- ---------- */
@@ -397,10 +409,35 @@ table .warn {
 	min-width: 15%;
 }
 
+/* ---------- ---------- ---------- AUTOCOMPLETE DROPDOWN ---------- ---------- ---------- */
+.autocomplete {
+	position: relative;
+	display: inline-block;
+}
 
+.autocomplete-items {
+	position: absolute;
+	border: 1px solid whitesmoke;
+	border-bottom: none;
+	border-top: none;
+	z-index: 99;
+	top: 100%;
+	left: 0;
+	right: 0;
+}
 
+.autocomplete-items div {
+	padding: 10px;
+	cursor: pointer;
+	background-color: white;
+	border-bottom: 1px solid whitesmoke;
+}
 
+.autocomplete-items div:hover {
+	background-color: whitesmoke;
+}
 
-
-
-
+.autocomplete-active {
+	background-color: dodgerblue !important;
+	color: white;
+}
