@@ -1,5 +1,5 @@
 
-<script src="courses-admin-functions.js"></script>
+<script src="unit-admin-functions.js"></script>
 
 <?php
 	date_default_timezone_set("Europe/Bratislava");
@@ -12,7 +12,7 @@
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
 		// user logged-in
 		nav_include();
-		include('courses-admin-functions.php');
+		include('unit-admin-functions.php');
         ?>
 
         <section>
@@ -20,7 +20,7 @@
             <div id="sectionh1negativemarginfix"></div>
 
             <h2>Skupiny</h2>
-            <table class="no-hover-background-color">
+            <table>
                 <tr>
                     <th>Názov</th>
                     <th>Obsadenosť</th>
@@ -45,7 +45,7 @@
         </section>
 
         <?php
-		include('courses-admin-aside.php');
+		include('unit-admin-aside.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in

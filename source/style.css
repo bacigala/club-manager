@@ -11,16 +11,16 @@ body {
 	grid-template-columns: 10px auto 10px;
 	grid-template-rows: auto auto 10px auto auto 10px auto 10px 70px auto;
 	grid-template-areas:
-		'	header	header	header'
-		'	nav			nav			nav		'
-		'	.				.				.			'
-		'	.				section	.			'
-		'	.				full		.			'
-		'	.				.				.			'
-		'	.				aside		.		 	'
-		'	.				.				.			'
-		'	footer	footer	footer'
-		' .       .       .     ';
+		'	header	header	header	'
+		'	nav		nav		nav		'
+		'	.		.		.		'
+		'	.		section	.		'
+		'	.		full	.		'
+		'	.		.		.		'
+		'	.		aside	.		'
+		'	.		.		.		'
+		'	footer	footer	footer	'
+		' 	.		.		.		';
 	background: -moz-linear-gradient(180deg, rgba(8,14,56,1) 0%, rgba(50,64,168,1) 100%);
 	background: -webkit-linear-gradient(180deg, rgba(8,14,56,1) 0%, rgba(50,64,168,1) 100%);
 	background: linear-gradient(180deg, rgba(8,14,56,1) 0%, rgba(50,64,168,1) 100%);
@@ -234,14 +234,14 @@ footer {
 		grid-template-columns: 10px 23% 10px auto 10px;
 		grid-template-rows: auto auto 10px auto auto 10px 70px auto;
 		grid-template-areas:
-			'	.					header		header		header		.				'
-			'	nav				nav				nav				nav				nav			'
-			'	. 				.					.					.					.				'
-			'	.					full			full			full			.				'
-			'	. 				aside 		.					section		.				'
-			'	. 				.					.					.					.				'
-			'	.			 		footer		footer		footer		.				'
-			' .					.					.					.					.				';
+			'	.	header	header	header	.	'
+			'	nav	nav		nav		nav		nav	'
+			'	. 	.		.		.		.	'
+			'	.	full	full	full	.	'
+			'	. 	aside 	.		section	.	'
+			'	. 	.		.		.		.	'
+			'	.	footer	footer	footer	.	'
+			' .		.		.		.		.	';
 	}
 
 	nav {
@@ -317,7 +317,6 @@ footer {
 	border-top: 5px solid white;
 	border-bottom: 5px solid white;
 	color: white;
-	/* font-weight: bold; */
 	text-align: center;
 }
 
@@ -368,14 +367,6 @@ table tr {
 	border-bottom: 1px solid black;
 }
 
-/* table tr:nth-child(odd) { */
-	/* background-color: #e6f2ff; */
-/* } */
-
-/* table tr:hover { */
-	/* background-color: #91b3ed; */
-/* } */
-
 table th {
 	background: skyblue;
 }
@@ -384,10 +375,6 @@ table .warn {
 	color: red;
 	font-size: medium;
 }
-
-/* table .no-hover-background-color.tr:hover { */
-	/* background-color: none; */
-/* } */
 
 .head-row {
 	background-color: skyblue;

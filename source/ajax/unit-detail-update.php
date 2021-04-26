@@ -6,8 +6,7 @@ function input_date_format($date_string) {
 }
 
 	session_start();
-	include('db.php');
-	include('functions.php');
+	include('../db.php');
 
 	$id = $_REQUEST["unitID"];
 	$property = $_REQUEST["property"];
@@ -19,17 +18,6 @@ function input_date_format($date_string) {
 		} else {
 			//echo $value;
 		}
-		
-		
-// <form action=""> 
-  // <select name="customers" onchange="showCustomer(this.value)">
-    // <option value="">Select a customer:</option>
-    // <option value="ALFKI">Alfreds Futterkiste</option>
-    // <option value="NORTS ">North/South</option>
-    // <option value="WOLZA">Wolski Zajazd</option>
-  // </select>
-// </form>
-
 
 if ($property == 'start_datetime' || $property == 'end_datetime') {
 	$value = input_date_format($value);
@@ -48,4 +36,3 @@ if ($property == 'start_datetime' || $property == 'end_datetime') {
 	$dom->appendChild($root);
 	
 	echo $dom->saveXml();
-?>

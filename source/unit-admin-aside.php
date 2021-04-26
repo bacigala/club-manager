@@ -11,7 +11,7 @@
 	<div class="aside-part">	
 		<p class="aside-part-headline">Info</p>
 		<div class="aside-part-content">
-			<p>Tu môžete spravovať dostupné kuryz a udalosti.</p>
+			<p>Tu môžete spravovať dostupné kurzy a udalosti.</p>
 			<p>Kliknite na kurz/skupinu/udalosť pre zobrazenie detailov.</p>
 		</div>
 	</div>

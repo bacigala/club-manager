@@ -6,11 +6,11 @@
  * @param $type string course/event/occurence
  */
 function get_units_of_lector($mysqli, $type) {
-	$query = "SELECT unit.id, unit.name, unit.type, unit.registration, unit.author_id, unit_clients.no_clients, unit.max_clients, unit_account.is_editor, no_clients"
+	$query = "SELECT unit.id, unit.name, unit.type, unit.registration, unit.author_id, unit_clients.no_clients, unit.max_clients, unit_account.is_editor, no_clients, unit_account.is_editor"
 			. " FROM unit LEFT JOIN unit_clients ON (unit.id = unit_clients.unit_id) "
 			. " LEFT JOIN unit_account ON (unit.id = unit_account.unit_id)"
 			. " WHERE "
-			. " (unit.author_id = " . $_SESSION['user_id'] . " OR account_id = "  . $_SESSION['user_id'] . ')';
+			. " (unit.author_id = " . $_SESSION['user_id'] . " OR (account_id = "  . $_SESSION['user_id'] . '))';
 	if ($type == 'course') 		$query .= " AND type = 'course'";
 	if ($type == 'event')  		$query .= " AND (type = 'event' OR type = 'singleevent')";
 	if ($type == 'occurence') $query .= " AND type = 'occurrence'";
@@ -45,11 +45,11 @@ function get_units_of_lector($mysqli, $type) {
 					break;
 			}
 			
-			$output .= '<td><form method="post" class="table-form" action="courses-admin-overview.php">';
+			$output .= '<td><form method="post" class="table-form" action="unit-admin-overview.php">';
 			$output .= '	<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
-							// todo: odstranit unit
+			$unit_id = $row['id'];
+			if ($row['author_id'] == $_SESSION['user_id']) $output .= "<input type='button' value='Odstrániť' onclick='unit_delete($unit_id)'/>";
 			$output .= '</form></td>';
-			
 			$output	.= '</tr>';
 			
 			$colspan = ($type == 'event') ? 5 : 4;

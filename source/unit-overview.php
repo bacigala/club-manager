@@ -54,7 +54,7 @@
 </section>
 
 <?php
-		include('courses-aside.php');
+		include('unit-aside.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in

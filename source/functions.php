@@ -46,7 +46,7 @@ function nav_include($full_width = false) {
             <div id="nav-core">
                 <?php if ($_SESSION['user_is_client']) {  // CLIENT ?>
                 <div class="nav-part">
-                    <a class="dropbtn" href="courses.php">Skupiny a udalosti</a>
+                    <a class="dropbtn" href="unit-overview.php">Skupiny a udalosti</a>
                 </div>
                 <div class="nav-part">
                     <a class="dropbtn" href="attendance.php">Dochádzka</a>
@@ -72,7 +72,7 @@ function nav_include($full_width = false) {
                 <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
                         <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Skupiny a udalosti</a>
                         <div class="dropdown-content">
-                                <a href="courses-admin-overview.php">Prehľad</a>
+                                <a href="unit-admin-overview.php">Prehľad</a>
                                 <!-- <a href="payment-item-modify.php">Nový</a> -->
                         </div>
                 </div>
@@ -207,7 +207,7 @@ function get_units_of_client($mysqli, $type) {
 		$request = '';
 
 		while ($row = $result->fetch_assoc()) {
-			$form_begin  = '<form method="post" class="table-form" action="courses.php">';
+			$form_begin  = '<form method="post" class="table-form" action="unit-overview.php">';
 			$form_begin .= '	<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
 			$form_begin .= '	<input type="hidden" name="unit_client_id" value="' .  (isset($row['unit_client_id']) ? $row['unit_client_id'] : '0') . '" />';
 			$form_end = '</form>';
@@ -265,7 +265,7 @@ function get_units_of_client($mysqli, $type) {
 		$full = '';
 
 		while ($row = $result->fetch_assoc()) {
-			$form_begin  = '<form method="post" class="table-form" action="courses.php">';
+			$form_begin  = '<form method="post" class="table-form" action="unit-overview.php">';
 			$form_begin .= '	<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
 			$form_begin .= '	<input type="hidden" name="unit_client_id" value="' .  '0' . '" />'; // these records are not in unit_client table yet
 			$form_end = '</form>';
@@ -491,7 +491,7 @@ function handle_course_request($mysqli) {
 		} finally {
 			// restrict form resend by refresh, clear $_POST
 			//$_SESSION['result_message'] .= $mysqli->error;
-			header("Location: courses.php");
+			header("Location: unit-overview.php");
 			exit();
 		}
 	}

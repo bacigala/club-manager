@@ -8,7 +8,7 @@
     
 		<div id="nav-core">
 			<div class="nav-part">
-				<a class="dropbtn" href="courses.php">Skupiny a udalosti</a>
+				<a class="dropbtn" href="unit-overview.php">Skupiny a udalosti</a>
 			</div>
 		
 			<div class="nav-part">
@@ -46,7 +46,7 @@
 			<div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
 					<a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Skupiny a udalosti</a>
 					<div class="dropdown-content">
-							<a href="courses-admin-overview.php">Prehľad</a>
+							<a href="unit-admin-overview.php">Prehľad</a>
 							<!-- <a href="payment-item-modify.php">Nový</a> -->
 					</div>
 			</div>
