@@ -6,30 +6,26 @@
 	include('db.php');
     include('login-verify.php'); // login check
 	header_include();
+	include('payment-modify-function.php');
 
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
 		// user logged-in
-        nav_include();
+        nav_include(true);
+		
+		if (!isset($_SESSION['user_is_client']) || $_SESSION['user_is_client']) {
+			echo 'Na prístup k tejto stránke nemáte oprávnenie.';
+			die();
+		}
+		// accountant / tuto / admin logged-in
 ?>
 
-<section>
-  <h1>Dochádzka</h1>
+<section class="full-width-section">
+  <h1>Používateľ</h1>
 	<div id="sectionh1negativemarginfix"></div>
-	
-	<h2>Záznamy</h2>
-	<table>
-		<tr>
-			<th>Názov</th>
-			<th>Dátum a čas</th>
-			<th>Stav</th>
-		</tr>
-		<?php get_attendance_of_client($mysqli); ?>
-	</table>
-	
+    <?php handle_client_modify($mysqli); ?>
 </section>
 
 <?php
-		include('attendance-aside.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in

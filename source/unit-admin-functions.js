@@ -1,4 +1,34 @@
 
+
+
+/**
+ * Create new course request.
+ */
+function create_unit(type) {
+	let name = window.prompt("Názov:", "");
+	if (name === null) return;
+
+	// ajax - create new coursse
+	let xhttp = new XMLHttpRequest();
+	xhttp.overrideMimeType('application/xml');
+	xhttp.onreadystatechange = function() {
+		if (this.readyState === 4 && this.status === 200) {
+			let newUnitId = parseInt(this.responseText);
+			if (isNaN(newUnitId)) {
+				window.alert("ERROR\n" + this.responseText)
+				return;
+			}
+
+			window.location.href = "unit-admin-overview.php?unitId=" + newUnitId;
+		}
+	};
+	xhttp.open("GET", "ajax/unit-insert.php?unitName="+name+"&unitType="+type, true);
+	xhttp.send();
+}
+
+
+
+
 /*
  * GENERAL UNIT DETAILS & FUNCTIONS
  */

@@ -82,8 +82,8 @@ function nav_include($full_width = false) {
                 <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
                         <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Použivatelia</a>
                         <div class="dropdown-content">
-                                <a href="">Prehľad</a>
-                                <a href="">Nový</a>
+                                <a href="client-overview.php">Prehľad</a>
+                                <a href="client-modify.php">Nový</a>
                         </div>
                 </div>
                 <?php } ?>
@@ -103,6 +103,10 @@ function nav_include($full_width = false) {
 function post_escaped($key) {
 	if (!isset($_POST[$key])) return '';
 	return addslashes(trim(strip_tags($_POST[$key])));
+}
+function get_escaped($key) {
+    if (!isset($_GET[$key])) return '';
+    return addslashes(trim(strip_tags($_GET[$key])));
 }
 
 /**

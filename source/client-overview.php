@@ -11,11 +11,12 @@
 		// user logged-in
         nav_include(true);
 		
-		if (!isset($_SESSION['user_is_ccountant']) || !$_SESSION['user_is_accountant']) {
+		if (!isset($_SESSION['user_is_client']) || $_SESSION['user_is_client']) {
 			echo 'Na prístup k tejto stránke nemáte oprávnenie.';
 			die();
 		}
 		// accountant logged-in
+        include('client-admin-functions.php');
 ?>
 
 <section class="full-width-section">
@@ -23,20 +24,17 @@
 	<div id="sectionh1negativemarginfix"></div>
 	<table>
 		<tr>
-			<th>Názov</th>
-			<th>Suma</th>
-			<th>Asociovaná udalosť</th>
-			<th>Od</th>
-			<th>Do</th>
+			<th>Meno</th>
+			<th>Priezvisko</th>
+			<th>Posledné prihlásenie</th>
 			<th>Možnosti</th>
 		</tr>
-		<?php get_item_list($mysqli); ?>
+		<?php get_client_list($mysqli); ?>
 	</table>
 	
 </section>
 
 <?php
-		//include('payment-aside.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in

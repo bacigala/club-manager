@@ -9,7 +9,7 @@
 
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
 		// user logged-in
-		include('nav.php');	
+        nav_include();
 ?>
 
 <section>
