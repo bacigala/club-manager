@@ -6,7 +6,6 @@ function toogle_present(caller) {
 	caller.disabled = true;
 	// ajax - toogle presence
 	let xhttp = new XMLHttpRequest();
-	xhttp.overrideMimeType('application/xml');
 	xhttp.onreadystatechange = function() {
 		if (this.readyState === 4 && this.status === 200) {
 			if (this.responseText !== '') {
@@ -16,6 +15,7 @@ function toogle_present(caller) {
 			caller.disabled = false;
 		}
 	};
-	xhttp.open("GET", "ajax/attendance-update.php?id="+caller.id+"&value="+caller.checked, true);
-	xhttp.send();
+	xhttp.open("POST", "ajax/attendance-update.php", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("id="+caller.id+"&value="+caller.checked);
 }

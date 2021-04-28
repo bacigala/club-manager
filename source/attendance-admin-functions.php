@@ -126,7 +126,7 @@ function handle_client_modify($mysqli) {
             $_SESSION['result_message'] = 'Akciu sa nepodarilo vykonať. (exception)' . $exception;
         } finally {
             $_SESSION['result_message'] .= $mysqli->error;
-            header("Location: payment-item-modify.php");
+            header("Location: item-modify.php");
             exit();
         }
     }

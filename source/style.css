@@ -101,6 +101,8 @@ section {
 	grid-area: section;
 	background-color: white;
 	padding: 20px;
+	display: block;
+	overflow: hidden;
 }
 
 	section h1 {
@@ -295,12 +297,12 @@ footer {
 		margin: 0 10%;
 	}
 
+	/* Align first menu item with left sidebar */
 	.nav-part:first-of-type {
-		margin-left: calc((10/8 * 23%) + 10px);
+		/*margin-left: calc((10/8 * 23%) + 10px);*/
 	}
-
 	nav.full-width .nav-part:first-of-type {
-		margin-left: 0;
+		/*margin-left: 0;*/
 	}
 }
 
@@ -381,19 +383,70 @@ table .warn {
 }
 
 .highlight {
-	background-color: sandybrown;
+	background-color: darkseagreen;
+}
+
+.table-container {
+	overflow-x: auto;
 }
 
 /* ---------- ---------- ---------- MAIN FORM (IN SECTION) ---------- ---------- ---------- */
+.master-form {
+	text-align: center;
+}
+
 .master-form fieldset {
 	padding: 0 20px 20px 20px;
 	margin-top: 20px;
+	border: none;
+	border-top: 2px solid dodgerblue;
+}
+
+.master-form fieldset legend {
+	padding: 0 10px;
+	min-width: 50%;
+	text-align: center;
+	border: 2px solid dodgerblue;
+	background-color: dodgerblue;
+	color: whitesmoke;
+}
+
+.master-form fieldset label {
+	display: inline-block;
+	width: 100%;
+	color: dodgerblue;
 }
 
 .master-form input, .master-form label, .master-form button, .master-form select {
 	margin-top: 10px;
-	display: block;
-	min-width: 15%;
+	display: inline-block;
+	min-width: 30%;
+	text-align: center	;
+}
+
+.master-form input[type="date"], .master-form input[type="number"]{
+	min-width: 100px;
+}
+
+.master-form select {
+	min-width: auto;
+}
+
+.master-form button {
+	min-width: 130px;
+	padding: 0 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+	color: dodgerblue;
+	font-size: 1em;
+	background-color: transparent;
+	border: 1px solid dodgerblue;
+}
+
+.master-form button:hover {
+	transition: background-color 0.4s;
+	color: whitesmoke;
+	background-color: dodgerblue;
 }
 
 /* ---------- ---------- ---------- AUTOCOMPLETE DROPDOWN ---------- ---------- ---------- */
@@ -427,4 +480,34 @@ table .warn {
 .autocomplete-active {
 	background-color: dodgerblue !important;
 	color: white;
+}
+
+/* ---------- ---------- ---------- OTHER ---------- ---------- ---------- */
+/* Button to create item, unit ...  */
+.button-create-new {
+	padding: 0 10px;
+	margin: 0 10px 10px 0;
+	color: dodgerblue;
+	font-size: 1em;
+	background-color: transparent;
+	border: 1px solid dodgerblue;
+}
+.button-create-new:hover {
+	transition: background-color 0.4s;
+	color: whitesmoke;
+	background-color: dodgerblue;
+}
+
+/* Button in tr, in 'options' column */
+.main-form-option-button {
+	padding: 0 3px;
+	margin: 2px 5px;
+	color: black;
+	background-color: transparent;
+	border: 1px solid dodgerblue;
+}
+.main-form-option-button:hover {
+	transition: background-color 0.4s;
+	color: whitesmoke;
+	background-color: dodgerblue;
 }
