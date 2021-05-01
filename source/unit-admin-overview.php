@@ -20,7 +20,7 @@
             <div id="sectionh1negativemarginfix"></div>
 
             <h2>Skupiny</h2>
-            <button type="button" onclick="create_unit('course')">Nová skupina</button>
+            <button class="button-create-new" type="button" onclick="create_unit('course')">Nová skupina</button>
             <table>
                 <tr>
                     <th>Názov</th>
@@ -32,8 +32,8 @@
             </table>
 
             <h2>Udalosti</h2>
-            <button type="button" onclick="create_unit('singleevent')">Nová jednorazová udalosť</button>
-            <button type="button" onclick="create_unit('event')">Nová udalosť s výskytmi</button>
+            <button class="button-create-new" type="button" onclick="create_unit('singleevent')">Nová jednorazová udalosť</button>
+            <button class="button-create-new" type="button" onclick="create_unit('event')">Nová udalosť s výskytmi</button>
             <table>
                 <tr>
                     <th>Názov</th>

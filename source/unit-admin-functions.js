@@ -18,7 +18,6 @@ function create_unit(type) {
 				window.alert("ERROR\n" + this.responseText)
 				return;
 			}
-
 			window.location.href = "unit-admin-overview.php?unitId=" + newUnitId;
 		}
 	};

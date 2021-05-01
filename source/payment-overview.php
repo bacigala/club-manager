@@ -22,6 +22,7 @@
   <h1>Platby - prehľad</h1>
 	<div id="sectionh1negativemarginfix"></div>
     <?php session_result_echo(); ?>
+    <button class="button-create-new" onclick="window.location.href = 'payment-modify.php';">Nová platba</button>
 	<table>
 		<tr>
 			<th>Vytvorené</th>

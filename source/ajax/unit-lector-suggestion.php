@@ -1,7 +1,7 @@
 <?php
 
 	session_start();
-	include('../db.php');
+	include('../db.php'); /* @var mysqli $mysqli */
 	include('../functions.php');
 
 	$unit_id = $_REQUEST["unitID"];
@@ -22,4 +22,3 @@
 		$dom->appendChild($root);
 		echo $dom->saveXml();
 	}
-?>

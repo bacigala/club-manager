@@ -120,6 +120,7 @@ section {
 	section h2 {
 		width: calc(100% - 20px);
 		margin-top: 20px;
+		margin-bottom: 10px;
 		padding: 10px;
 		font-size: 120%;
 		border-bottom: 5px solid #9fd8ef;
@@ -202,7 +203,7 @@ footer {
 }
 
 /* BANNERS */
-.success, .info, .warning, .error {
+.success, .info, .warning, .error, .index-function-option {
 	text-indent: 0;
 	padding: 10px;
 	border-left-width: 5px;
@@ -227,6 +228,23 @@ footer {
 .error {
 	background-color: #ff6868;
 	border-left-color: red;
+}
+
+.index-function-option {
+	display: block;
+	margin: 10px;
+	background-color: lightskyblue;
+	color: black;
+	border-left-color: deepskyblue;
+	text-decoration: none;
+}
+
+.index-function-option:hover {
+	border-left-color: red;
+}
+
+.desktop-only-block, .desktop-only-inline {
+	display: none;
 }
 
 
@@ -303,6 +321,14 @@ footer {
 	}
 	nav.full-width .nav-part:first-of-type {
 		/*margin-left: 0;*/
+	}
+
+	.desktop-only-block {
+		display: block;
+	}
+
+	.desktop-only-inline {
+		display: inline;
 	}
 }
 
@@ -388,6 +414,10 @@ table .warn {
 
 .table-container {
 	overflow-x: auto;
+}
+
+table input[type="checkbox"] {
+	margin: 0 5px 0 15px;
 }
 
 /* ---------- ---------- ---------- MAIN FORM (IN SECTION) ---------- ---------- ---------- */

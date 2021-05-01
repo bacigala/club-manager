@@ -3,7 +3,7 @@
 	session_start();
 	include('functions.php');
 	include('db.php');
-  include('login-verify.php'); // login check
+	include('login-verify.php'); // login check
 	header_include();
 
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
@@ -12,23 +12,32 @@
 ?>
 
 <section>
-    <h1>Welcome to the main page!</h1>
+    <h1>Vitajte <?php echo($_SESSION['user_name']); ?>!</h1>
 		<div id="sectionh1negativemarginfix"></div>
-		<h2>Section1</h2>
-    <ul>
-        <li>List item1</li>
-        <li>List item2</li>
-        <li>List item3</li>
-    </ul>
-		
-		<h2>Section2</h2>
-		<p class="success">Success banner.<p>
-		<p class="info">Info banner.<p>
-		<p class="warning">Warning banner.<p>
-		<p class="error">Error banner.<p>
-		
-    <h2>Section3</h2>
-		<p>Donec quis sapien vehicula, viverra sem at, condimentum ex. Suspendisse a tortor in neque ultrices pretium scelerisque at orci. Vivamus id nisi vitae ex imperdiet bibendum interdum eu elit. Quisque erat felis, tincidunt vel mauris vel, tempus vehicula nulla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Integer dapibus fermentum consequat. Maecenas facilisis, enim at pharetra tincidunt, dolor odio finibus dolor, non posuere quam lacus eget nisi. Aenean consequat ultrices ante eget rhoncus. Donec dictum velit id ex pulvinar, et ullamcorper nisi dignissim. Nunc laoreet aliquet malesuada. Praesent rhoncus ante augue, nec bibendum purus luctus in. Praesent lectus lectus, iaculis eget placerat ultrices, ultricies nec arcu. Integer ac fermentum mi. Fusce cursus elementum orci, quis suscipit elit sollicitudin non. Pellentesque sed arcu ipsum.</p>
+
+        <?php if ($_SESSION['user_is_client']) {  // CLIENT ?>
+            <h2>Možnosti</h2>
+            <a class="index-function-option" href="unit-overview.php">Prehľad udalostí & prihlasovanie</a>
+            <a class="index-function-option" href="attendance.php">Dochádzka</a>
+            <a class="index-function-option" href="payments.php">Poplatky</a>
+        <?php } else { ?>
+
+            <?php if ($_SESSION['user_is_accountant']) { // ACCOUNTANT ?>
+                <h2>Financie</h2>
+                <a class="index-function-option" href="item-overview.php">Prehľad položiek</a>
+                <a class="index-function-option" href="payment-overview.php">Prehľad platieb</a>
+            <?php } ?>
+
+            <?php if ($_SESSION['user_is_tutor']) {  // TUTOR (LECTOR) ?>
+                <h2>Správa skupín a udalostí</h2>
+                <a class="index-function-option" href="unit-admin-overview.php">Prehľad a správa</a>
+            <?php } ?>
+
+            <?php if ($_SESSION['user_is_admin']) { // ADMINISTRATOR ?>
+                <h2>Používateľské účty</h2>
+                <a class="index-function-option" href="client-overview.php">Prehľad a správa</a>
+            <?php } ?>
+        <?php } ?>
 </section>
 
 <?php

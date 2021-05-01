@@ -57,13 +57,13 @@ function get_units_of_lector($mysqli, $type) {
 			$output .= '<form method="post" class="table-form" action="unit-admin-overview.php">';
 			$output .= '	<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
 			$unit_id = $row['id'];
-			if ($row['author_id'] == $_SESSION['user_id']) $output .= "<input type='button' value='todo Odstrániť' onclick='unit_delete($unit_id)'/>";
+			if ($row['author_id'] == $_SESSION['user_id']) $output .= "<input type='button' value='todo Odstrániť' onclick='unit_delete($unit_id)' class='main-form-option-button'/>";
 			$output .= '</form>';
 
 			if ($row['type'] == 'singleevent' && $row['attendance'] == '1') {
                 $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php">';
                 $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
-                $output .= '<input type="submit" name="" value="Dochádzka" />';
+                $output .= '<input type="submit" name="" value="Dochádzka" class="main-form-option-button" />';
                 $output .= '</form>';
             }
 

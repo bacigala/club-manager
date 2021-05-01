@@ -54,38 +54,38 @@ function nav_include($full_width = false) {
                 <div class="nav-part">
                     <a class="dropbtn" href="payments.php">Poplatky</a>
                 </div>
-                <?php } ?>
+                <?php } else { ?>
 
-                <?php if ($_SESSION['user_is_accountant']) { // ACCOUNTANT ?>
-                <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
-                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Platby</a>
-                        <div class="dropdown-content">
-                                <a href="item-overview.php">Prehľad položiek</a>
-                                <a href="item-modify.php">Nová položka</a>
-                                <a href="payment-overview.php">Prehľad platieb</a>
-                                <a href="payment-modify.php">Nová platba</a>
-                        </div>
-                </div>
-                <?php } ?>
+                    <?php if ($_SESSION['user_is_accountant']) { // ACCOUNTANT ?>
+                    <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
+                            <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Platby</a>
+                            <div class="dropdown-content">
+                                    <a href="item-overview.php">Prehľad položiek</a>
+                                    <a href="item-modify.php">Nová položka</a>
+                                    <a href="payment-overview.php">Prehľad platieb</a>
+                                    <a href="payment-modify.php">Nová platba</a>
+                            </div>
+                    </div>
+                    <?php } ?>
 
-                <?php if ($_SESSION['user_is_tutor']) {  // TUTOR (LECTOR) ?>
-                <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
-                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Skupiny a udalosti</a>
-                        <div class="dropdown-content">
-                                <a href="unit-admin-overview.php">Prehľad</a>
-                                <!-- <a href="payment-item-modify.php">Nový</a> -->
-                        </div>
-                </div>
-                <?php } ?>
+                    <?php if ($_SESSION['user_is_tutor']) {  // TUTOR (LECTOR) ?>
+                    <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
+                            <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Skupiny a udalosti</a>
+                            <div class="dropdown-content">
+                                    <a href="unit-admin-overview.php">Prehľad</a>
+                                    <!-- <a href="payment-item-modify.php">Nový</a> -->
+                            </div>
+                    </div>
+                    <?php } ?>
 
-                <?php if ($_SESSION['user_is_admin']) { // ADMINISTRATOR ?>
-                <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
-                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Použivatelia</a>
-                        <div class="dropdown-content">
-                                <a href="client-overview.php">Prehľad</a>
-                                <a href="client-modify.php">Nový</a>
-                        </div>
-                </div>
+                    <?php if ($_SESSION['user_is_admin']) { // ADMINISTRATOR ?>
+                    <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
+                            <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Použivatelia</a>
+                            <div class="dropdown-content">
+                                    <a href="client-overview.php">Prehľad</a>
+                            </div>
+                    </div>
+                    <?php } ?>
                 <?php } ?>
 
         </div>
@@ -100,8 +100,8 @@ function nav_include($full_width = false) {
  * @param $key string key in $_POST array
  * @return string escaped value $_POST[{$key}]
  */
-function post_escaped($key) {
-	if (!isset($_POST[$key])) return '';
+function post_escaped($key, $return_if_not_set = '') {
+	if (!isset($_POST[$key])) return $return_if_not_set;
 	return addslashes(trim(strip_tags($_POST[$key])));
 }
 function get_escaped($key) {
@@ -606,7 +606,7 @@ function get_all_payments($mysqli) {
 			// options
 			$output .= '<td><form method="post" class="table-form" action="payment-modify.php">';
 			$output .= '	<input type="hidden" name="payment_id" value="' . $row['id'] . '" />';
-			$output .= '	<button name="request_type" type="submit" value="modify">Upraviť</button>';
+			$output .= '	<button name="request_type" type="submit" value="modify" class="main-form-option-button">Upraviť</button>';
 			$output .= '</form></td>';
 			
 			$output .= '</tr>';

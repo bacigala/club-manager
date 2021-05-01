@@ -33,10 +33,14 @@
             $_SESSION['user_is_accountant'] = $user['is_accountant'];
             $_SESSION['user_is_admin'] = $user['is_admin'];
         }
+        header("Location: index.php");
+        exit();
     } elseif (isset($_POST['logout'])) {
         // logout request
         session_unset();
         session_destroy();
+        header("Location: index.php");
+        exit();
     }
 
     $_SESSION['has_user'] = isset($_SESSION['user_id']);

@@ -10,16 +10,16 @@
 	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
 		// user logged-in
         nav_include(true);
-        require_user_level('admin');
+		require_user_level('admin');
 
 		// accountant / tuto / admin logged-in
-        include('client-admin-functions.php');
+        include('account-admin-functions.php');
 ?>
 
 <section class="full-width-section">
-  <h1>Klient</h1>
+  <h1>Zamestanec</h1>
 	<div id="sectionh1negativemarginfix"></div>
-    <?php handle_client_modify($mysqli); ?>
+    <?php handle_account_modify($mysqli); ?>
 </section>
 
 <?php
