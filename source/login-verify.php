@@ -1,5 +1,7 @@
 <?php
 
+    include_once('db.php'); /* @var $mysqli */
+
     if (isset($_POST["username"]) && isset($_POST["password"])
             && $user = check_user($mysqli, post_escaped('username'), post_escaped('password'))) {
         // LOGIN REQUEST

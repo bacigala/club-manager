@@ -1,5 +1,61 @@
 <?php
 
+/* DB item manipulation */
+
+/**
+ * Ferch one item record from DB.
+ * @param mysqli $mysqli
+ * @param int $item_id
+ * @return array|string|null
+ */
+function db_item_select($mysqli, $item_id = 0) {
+    $return_value = '';
+    $query = "SELECT * FROM item WHERE id=?";
+    if ($statement = $mysqli->prepare($query)) {
+        $statement->bind_param("i", $item_id);
+        $statement->execute();
+        $result = $statement->get_result();
+        if ($result->num_rows > 0)
+            $return_value = $result->fetch_assoc();
+    }
+    return $return_value;
+}
+
+function db_item_insert($mysqli, $item_data, $author_id = false) {
+    if (!$author_id) $author_id = $_SESSION['user_id'];
+    $query = "INSERT INTO item SET author_id=" . $author_id;
+    foreach ($item_data AS $key => $value) {
+        if ($value == '')
+            $query .= ", $key=NULL"; // empty string = NULL in DB
+        else
+            $query .= ", $key='$value'";
+    }
+    if ($mysqli->query($query))
+        return $mysqli->insert_id;
+    else
+        return 0;
+}
+
+function db_item_update($mysqli, $item_id, $item_data, $author_id = false) {
+    if (!$author_id) $author_id = $_SESSION['user_id'];
+    $query = "UPDATE item SET author_id=" . $author_id;
+    foreach ($item_data AS $key => $value) {
+        if ($value == '')
+            $query .= ", $key=NULL"; // empty string = NULL in DB
+        else
+            $query .= ", $key='$value'";
+    }
+    $query .= ' WHERE id=' . $item_id ;
+    return $mysqli->query($query);
+}
+
+function db_item_delete($mysqli, $item_id) {
+    $query = "DELETE FROM item WHERE id=$item_id";
+    return $mysqli->query($query);
+}
+
+
+
 /**
  * Produces <tr>s of the table on item-overview.php page.
  * @param mysqli $mysqli
@@ -32,23 +88,132 @@ function get_item_list($mysqli, $highlight_id = 0) {
     }
 }
 
+
 /**
- * Ferch one item record from DB.
- * @param mysqli $mysqli
- * @param int $item_id
- * @return array|string|null
+ * Creates content of item-modify.php page (for accountant)
+ * @param $mysqli
  */
-function get_item($mysqli, $item_id = 0) {
-    $return_value = '';
-    $query = "SELECT * FROM item WHERE id=?";
-    if ($statement = $mysqli->prepare($query)) {
-        $statement->bind_param("i", $item_id);
-        $statement->execute();
-        $result = $statement->get_result();
-        if ($result->num_rows > 0)
-            $return_value = $result->fetch_assoc();
+function handle_item_modify($mysqli) {
+    $request_type = '';
+    if (isset($_POST['item_create'])) $request_type = 'create';
+    if (isset($_POST['item_cancel'])) $request_type = 'cancel';
+    if (isset($_POST['item_modify'])) $request_type = 'modify';
+    if (isset($_POST['item_delete'])) $request_type = 'delete';
+
+    $item_id = intval(post_escaped('item_id'));
+
+    if ($request_type) {
+        try {
+            switch ($request_type) {
+                case 'create':
+                    // get & verify form data
+                    $data = get_item_form_data();
+                    if (!empty($_SESSION['error'])) {
+                        $_SESSION['data'] = $data; // store data to be pre-filled after reload
+                        break;
+                    }
+                    // DB INSERT
+                    if (($item_id = db_item_insert($mysqli, $data)) == 0)
+                        session_result('error', "Položku nebolo možné vytvoriť.");
+                    else
+                        session_result('success', "Položka bola vytvorená.");
+                    break;
+                case 'cancel':
+                    session_result('warning', 'Položka nebola upravená.');
+                    break;
+                case 'modify':
+                    // get & verify form data
+                    $data = get_item_form_data();
+                    if (!empty($_SESSION['error']) || !$item_id) {
+                        $_SESSION['data'] = $data; // store data to be pre-filled after reload
+                        break;
+                    }
+                    // query
+                    if (db_item_update($mysqli, $item_id, $data))
+                        session_result('success', 'Položka bola upravená.');
+                    else
+                        session_result('error', "Položku nebolo možné upraviť.");
+                    break;
+                case 'delete':
+                    // query
+                    if (db_item_delete($mysqli, $item_id))
+                        session_result('success', 'Položka bola odstránená.');
+                    else
+                        session_result('error', "Položku nebolo možné odstrániť.");
+                    break;
+            }
+        } catch (mysqli_sql_exception $exception) {
+            session_result('error', 'Akciu sa nepodarilo vykonať. (exception)' . $exception);
+            if ($request_type == 'delete') {
+                $_SESSION['result_message'] = 'Položku nemožno odstrániť. (Brániť tomu môže napríklad existujúca platba s ňou asociovaná.)';
+            }
+        } finally {
+            $_SESSION['result_message'] .= $mysqli->error;
+            if ($_SESSION['result_message_type'] == 'error' || !empty($_SESSION['error'])) {
+                // stay on this page
+                header("Location: item-modify.php");
+            } else {
+                // go to item overview
+                unset($_SESSION['data']);
+                unset($_SESSION['error']);
+                header("Location: item-overview.php?highlight=$item_id");
+            }
+            exit();
+        }
     }
-    return $return_value;
+
+    // list errors
+    if (isset($_SESSION['error'])) {
+        echo '<p class="error">Formulár nebol odoslaný.</p>';
+        foreach ($_SESSION['error'] AS $value)
+            echo '<p class="error">' . $value . '</p>' ;
+        unset($_SESSION['error']);
+        get_item_form($mysqli, $item_id>0?"modify":"create", $_SESSION['data']);
+        unset($_SESSION['data']);
+    } else {
+        get_item_form($mysqli);
+    }
+}
+
+function get_item_form_data() {
+    // get & verify data
+    $data = array();
+    $error = array();
+
+    // name
+    $data['name'] = post_escaped('name');
+    if ($data['name'] == '') $error['name'] = 'Prosím zadajte názov.';
+
+    // price
+    $data['price'] =  doubleval(post_escaped('price'));
+    if ($data['price'] < 0) $error['price'] = 'Cena musí byť nezáporná.';
+
+    // start_date
+    $data['start_date'] = post_escaped('start_date');
+    if (strtotime($data['start_date']) == '0000-00-00') $data['start_date'] = '';
+
+    // end_date
+    $data['end_date'] = post_escaped('end_date');
+    if (strtotime($data['end_date']) == '0000-00-00') $data['end_date'] = '';
+
+    // asociated unit
+    $data['unit_id'] = post_escaped('unit_id');
+    if ($data['unit_id'] == '') {
+        // do not take start and end into account withoud associated unit
+        $data['start_date'] = '';
+        $data['end_date'] = '';
+    }
+
+    $data['delay'] = intval(post_escaped('delay'));
+
+    // if data are not being send to DB (due to an error), these are used to pre-fill form again
+    if (!empty($error)) {
+        $data['id'] = post_escaped('item_id');
+    }
+
+    // return data
+    $_SESSION['error'] = $error;
+    return $data;
 }
 
 // construct form for item create / modify
@@ -57,7 +222,7 @@ function get_item_form($mysqli, $type = 'create', $form_data = false) {
 
     if (is_bool($form_data)) {
         if (isset($_POST['item_id'])) {
-            if ($item = get_item($mysqli, post_escaped('item_id'))) {
+            if ($item = db_item_select($mysqli, post_escaped('item_id'))) {
                 // display form for item modification
                 $form_data = $item;
             } else {
@@ -66,6 +231,8 @@ function get_item_form($mysqli, $type = 'create', $form_data = false) {
                 return;
             }
         }
+    } else {
+        $type = 'modify';
     }
 
     ?>
@@ -73,7 +240,7 @@ function get_item_form($mysqli, $type = 'create', $form_data = false) {
         <fieldset>
             <legend>Položka</legend>
 
-            <input type="hidden" name="item_id" value="<?php if (isset($_POST['item_id'])) echo post_escaped('item_id'); ?>"/>
+            <input type="hidden" name="item_id" value="<?php if (isset($form_data['id'])) echo $form_data['id']; ?>"/>
 
             <label for="name" class="required">Názov</label>
             <input type="text" name="name" id="name" maxlength="40" value="<?php if (isset($form_data['name'])) echo $form_data['name']; ?>">
@@ -90,10 +257,10 @@ function get_item_form($mysqli, $type = 'create', $form_data = false) {
 
             <label for="unit_id">Skupina / Udalosť</label>
             <select id="unit_id" name="unit_id">
-                <?php if (!isset($form_data['unit_id']) || $type != 'modify') { ?><option value="0" <?php if (!isset($form_data['unit_id'])) echo 'selected';?> >Žiadna</option><?php } ?>
+                <option value="" <?php if (!isset($form_data['unit_id'])) echo 'selected';?> >Žiadna</option>
                 <?php
-                    $unit_id = isset($form_data['unit_id']) ? $form_data['unit_id'] : false;
-                     get_unit_options($mysqli, $unit_id);
+                $unit_id = isset($form_data['unit_id']) ? $form_data['unit_id'] : false;
+                get_unit_options($mysqli, $unit_id);
                 ?>
             </select>
 
@@ -118,136 +285,6 @@ function get_item_form($mysqli, $type = 'create', $form_data = false) {
         </fieldset>
     </form>
     <?php
-}
-
-function get_item_form_data() {
-    // get & verify data
-    $data = array();
-    $error = array();
-
-    if (isset($_POST['name'])) {
-        $data['name'] = post_escaped('name');
-        if ($data['name'] == '') $error['name'] = 'Prosím zadajte názov.';
-    }
-
-    if (isset($_POST['price'])) {
-        $data['price'] =  intval(post_escaped('price'));
-        if ($data['price'] < 0) $error['price'] = 'Cena musí byť nezáporná.';
-    }
-
-    if ((strtotime(post_escaped('start_date')) != '0000-00-00') && (strtotime(post_escaped('start_date')) != '')) {
-        $data['start_date'] = post_escaped('start_date');
-    }
-    if ((strtotime(post_escaped('end_date')) != '0000-00-00') && (strtotime(post_escaped('end_date')) != '')) {
-        $data['end_date'] = post_escaped('end_date');
-    }
-
-    if (isset($_POST['unit_id']) && post_escaped('unit_id')) {
-        $data['unit_id'] = post_escaped('unit_id');
-    } else {
-        // withoud associated event, do not take start and end into account
-        unset($data['start_date']);
-        unset($data['end_date']);
-    }
-
-    $data['delay'] = intval(post_escaped('delay'));
-
-    // return data
-    $_SESSION['error'] = $error;
-    return $data;
-}
-
-function handle_item_modify($mysqli) {
-    $request_type = '';
-    if (isset($_POST['item_create'])) $request_type = 'create';
-    if (isset($_POST['item_cancel'])) $request_type = 'cancel';
-    if (isset($_POST['item_modify'])) $request_type = 'modify';
-    if (isset($_POST['item_delete'])) $request_type = 'delete';
-
-    $item_id = 0;
-    if (isset($_POST['item_id'])) $item_id = intval(post_escaped('item_id'));
-
-    if ($request_type) {
-        try {
-            switch ($request_type) {
-                case 'create': // CREATE
-                    // get & verify data from user
-                    $data = get_item_form_data();
-                    if (isset($_SESSION['error']) && !empty($_SESSION['error'])) {
-                        session_result('error', "Položku nebolo možné vytvoriť.");
-                        break;
-                    }
-
-                    // DB insert
-                    $query = "INSERT INTO item SET author_id=" . $_SESSION['user_id'];
-                    foreach ($data AS $key => $value) $query .= ", $key='$value'";
-                    if (!$mysqli->query($query)) {
-                        session_result('error', "Položku nebolo možné vytvoriť.");
-                        break;
-                    }
-                    $item_id = $mysqli->insert_id;
-                    session_result('success', "Položka bola vytvorená.");
-                    break;
-                case 'cancel': // CANCEL
-                    session_result('warning', 'Položka nebola upravená.');
-                    break;
-                case 'modify': // MODIFY
-                    // get data
-                    $data = get_item_form_data();
-                    if ((isset($_SESSION['error']) && !empty($_SESSION['error'])) || !$item_id) {
-                        session_result('error', "Položku nebolo možné upraviť.");
-                        break;
-                    }
-                    // query
-                    $query = "UPDATE item SET author_id=" . $_SESSION['user_id'];
-                    foreach ($data AS $key => $value) $query .= ", $key='$value'";
-                    $query .= ' WHERE id=' . $item_id ;
-                    if (!$mysqli->query($query)) {
-                        session_result('error', "Položku nebolo možné upraviť.");
-                        break;
-                    }
-
-                    session_result('success', 'Položka bola upravená.');
-                    break;
-                case 'delete': // DELETE
-                    // query
-                    $query = "DELETE FROM item WHERE id=" . $item_id ;
-                    if (!$mysqli->query($query)) {
-                        session_result('error', "Položku nebolo možné odstrániť.");
-                        break;
-                    }
-                    session_result('success', 'Položka bola odstránená.');
-                    break;
-            }
-        } catch (mysqli_sql_exception $exception) {
-            session_result('error', 'Akciu sa nepodarilo vykonať. (exception)' . $exception);
-            if ($request_type == 'delete') {
-                $_SESSION['result_message'] = 'Položku nemožno odstrániť. (Brániť tomu môže napríklad existujúca platba s ňou asociovaná.)';
-            }
-        } finally {
-            //$_SESSION['result_message'] .= $mysqli->error; // DEBUG
-            if (isset($_SESSION['error']) && !empty($_SESSION['error'])) {
-                // stay on this page
-                header("Location: item-modify.php");
-            } else {
-                // go to item overview
-                header("Location: item-overview.php?highlight=$item_id");
-            }
-            exit();
-        }
-    }
-
-    session_result_echo();
-
-    // list errors
-    if (isset($_SESSION['error'])) {
-        foreach ($_SESSION['error'] AS $value) {
-            echo '<p class="error">' . $value . '</p>' ;
-        }
-        unset($_SESSION['error']);
-    }
-
-    get_item_form($mysqli);
 }
 
 

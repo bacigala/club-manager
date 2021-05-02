@@ -258,7 +258,7 @@ function handle_course_request($mysqli) {
                     }
 
                     // record payment obligation
-                    if (!record_payments($mysqli, $unit_id)) { // wtf? stops execution
+                    if (!record_payments($mysqli, $unit_id)) {
                         $mysqli->rollback();
                         $_SESSION['result_message_type'] = 'error';
                         $_SESSION['result_message'] = 'Problem pri uctovani platby.';
