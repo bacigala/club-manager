@@ -112,10 +112,8 @@ section {
 		padding: 20px;
 		margin: -20px;
 	}
-	
-	#sectionh1negativemarginfix {
-		margin-top: 30px;
-	}
+
+
 
 	section h2 {
 		width: calc(100% - 20px);
@@ -125,10 +123,6 @@ section {
 		font-size: 120%;
 		border-bottom: 5px solid #9fd8ef;
 		color: rgba(8,21,57,1);
-	}
-	
-	section h2:first-of-type {
-		margin-top: 0;
 	}
 
 	section p {
@@ -142,7 +136,7 @@ section {
 		margin: 10px 0 10px 25px; 
 	}
 	
-.full-width-section {
+section.full-width {
 	grid-area: full;
 }
 	
@@ -251,14 +245,14 @@ footer {
 /* ---------- ---------- ---------- TABLET DISPLAY RULES ---------- ---------- ---------- */
 @media only screen and (min-width: 900px) {
 	body {
-		grid-template-columns: 10px 23% 10px auto 10px;
+		grid-template-columns: 10px auto 10px 23% 10px;
 		grid-template-rows: auto auto 10px auto auto 10px 70px auto;
 		grid-template-areas:
 			'	.	header	header	header	.	'
 			'	nav	nav		nav		nav		nav	'
 			'	. 	.		.		.		.	'
 			'	.	full	full	full	.	'
-			'	. 	aside 	.		section	.	'
+			'	. 	section .		aside	.	'
 			'	. 	.		.		.		.	'
 			'	.	footer	footer	footer	.	'
 			' .		.		.		.		.	';
@@ -307,7 +301,7 @@ footer {
 /* ---------- ---------- ---------- DESKTOP DISPLAY RULES ---------- ---------- ---------- */
 @media only screen and (min-width: 1150px) {
 	body {
-		grid-template-columns: 10% 23% 10px auto 10%;
+		grid-template-columns: 10% auto 10px 23% 10%;
 	}
 	
 	nav {
@@ -451,11 +445,24 @@ table input[type="checkbox"] {
 	margin-top: 10px;
 	display: inline-block;
 	min-width: 30%;
-	text-align: center	;
+	text-align: center;
 }
 
 .master-form input[type="date"], .master-form input[type="number"]{
 	min-width: 100px;
+}
+
+/* container for radio+label */
+.form-component-container {
+	width: 100%;
+	border-bottom: 1px solid lightskyblue;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
+}
+
+.form-component-container input[type="radio"], .form-component-container label {
+	width: auto !important;
+	min-width: 0 !important;
 }
 
 .master-form select {
@@ -540,4 +547,12 @@ table input[type="checkbox"] {
 	transition: background-color 0.4s;
 	color: whitesmoke;
 	background-color: dodgerblue;
+}
+
+/* fix: gap between h1 and <section> content, due to h1 negative margin */
+section h1 + * {
+	margin-top: 40px;
+}
+section h1 + h2 {
+	margin-top: 30px;
 }

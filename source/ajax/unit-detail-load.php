@@ -1,11 +1,6 @@
 
 <?php
 
-function input_date_format($date_string) {
-	$date = date_create($date_string);
-	return date_format($date, "Y-m-d") . 'T' . date_format($date, "H:i");
-}
-
 
 // user needs to be tutor
 session_start();

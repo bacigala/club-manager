@@ -28,14 +28,16 @@
 	<div id="sectionh1negativemarginfix"></div>
 
 	<h2>Záznamy</h2>
-	<table>
-		<tr>
-			<th>Názov</th>
-			<th>Dátum a čas</th>
-			<th>Stav</th>
-		</tr>
-		<?php unit_get_attendance($mysqli); ?>
-	</table>
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>Názov</th>
+                <th>Dátum a čas</th>
+                <th>Stav</th>
+            </tr>
+            <?php unit_get_attendance($mysqli); ?>
+        </table>
+    </div>
 	
 </section>
 

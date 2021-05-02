@@ -46,44 +46,42 @@ function nav_include($full_width = false) {
             <div id="nav-core">
                 <?php if ($_SESSION['user_is_client']) {  // CLIENT ?>
                 <div class="nav-part">
-                    <a class="dropbtn" href="unit-overview.php">Skupiny a udalosti</a>
+                    <a class="dropbtn" href="units.php">Prihlasovanie</a>
                 </div>
                 <div class="nav-part">
                     <a class="dropbtn" href="attendance.php">Dochádzka</a>
                 </div>
                 <div class="nav-part">
-                    <a class="dropbtn" href="payments.php">Poplatky</a>
+                    <a class="dropbtn" href="payments.php">Platby</a>
                 </div>
                 <?php } else { ?>
 
                     <?php if ($_SESSION['user_is_accountant']) { // ACCOUNTANT ?>
                     <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
-                            <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Platby</a>
-                            <div class="dropdown-content">
-                                    <a href="item-overview.php">Prehľad položiek</a>
-                                    <a href="item-modify.php">Nová položka</a>
-                                    <a href="payment-overview.php">Prehľad platieb</a>
-                                    <a href="payment-modify.php">Nová platba</a>
-                            </div>
+                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Financie</a>
+                        <div class="dropdown-content">
+                            <a href="item-overview.php">Položky</a>
+                            <a href="item-modify.php">Nová položka</a>
+                            <a href="payment-overview.php">Platby</a>
+                            <a href="payment-modify.php">Nová platba</a>
+                        </div>
                     </div>
                     <?php } ?>
 
                     <?php if ($_SESSION['user_is_tutor']) {  // TUTOR (LECTOR) ?>
-                    <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
-                            <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Skupiny a udalosti</a>
-                            <div class="dropdown-content">
-                                    <a href="unit-admin-overview.php">Prehľad</a>
-                                    <!-- <a href="payment-item-modify.php">Nový</a> -->
-                            </div>
+                    <div class="nav-part">
+                        <a class="dropbtn" href="unit-admin-overview.php">Skupiny a udalosti</a>
                     </div>
                     <?php } ?>
 
                     <?php if ($_SESSION['user_is_admin']) { // ADMINISTRATOR ?>
                     <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
-                            <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Použivatelia</a>
-                            <div class="dropdown-content">
-                                    <a href="client-overview.php">Prehľad</a>
-                            </div>
+                        <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Používateľsé účty</a>
+                        <div class="dropdown-content">
+                            <a href="client-overview.php">Prehľad</a>
+                            <a href="account-modify.php">Nový zamestnanec</a>
+                            <a href="client-modify.php">Nový klinet</a>
+                        </div>
                     </div>
                     <?php } ?>
                 <?php } ?>
@@ -134,7 +132,7 @@ function require_user_level($role, $die = true) {
             break;
     }
     if ($die && !$check_ok) {
-        echo 'You have no permission to access this page.';
+        echo 'You do not have a permission to access this page.';
         die();
     }
     return $check_ok;
@@ -187,8 +185,32 @@ function session_result_echo($unset = true) {
     }
 }
 
+/**
+ * Formats datetime from DB to datetime in input[date]
+ * @param string $date_string date in DB format
+ * @return string date in input[date] format
+ */
+function input_date_format($date_string) {
+    $date = date_create($date_string);
+    return date_format($date, "Y-m-d") . 'T' . date_format($date, "H:i");
+}
 
+/**
+ * @return bool true if user is logged in
+ */
+function user_logged_in() {
+    return isset($_SESSION['has_user']) && $_SESSION['has_user'];
+}
 
+/**
+ * If no user if logged in, die() and display login form.
+ */
+function require_user_logged_in() {
+    if (!user_logged_in()) {
+        include('login-form.php');
+        die();
+    }
+}
 
 
 
@@ -246,7 +268,7 @@ function get_units_of_client($mysqli, $type) {
 		$request = '';
 
 		while ($row = $result->fetch_assoc()) {
-			$form_begin  = '<form method="post" class="table-form" action="unit-overview.php">';
+			$form_begin  = '<form method="post" class="table-form" action="units.php">';
 			$form_begin .= '	<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
 			$form_begin .= '	<input type="hidden" name="unit_client_id" value="' .  (isset($row['unit_client_id']) ? $row['unit_client_id'] : '0') . '" />';
 			$form_end = '</form>';
@@ -304,7 +326,7 @@ function get_units_of_client($mysqli, $type) {
 		$full = '';
 
 		while ($row = $result->fetch_assoc()) {
-			$form_begin  = '<form method="post" class="table-form" action="unit-overview.php">';
+			$form_begin  = '<form method="post" class="table-form" action="units.php">';
 			$form_begin .= '	<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
 			$form_begin .= '	<input type="hidden" name="unit_client_id" value="' .  '0' . '" />'; // these records are not in unit_client table yet
 			$form_end = '</form>';
@@ -530,7 +552,7 @@ function handle_course_request($mysqli) {
 		} finally {
 			// restrict form resend by refresh, clear $_POST
 			//$_SESSION['result_message'] .= $mysqli->error;
-			header("Location: unit-overview.php");
+			header("Location: units.php");
 			exit();
 		}
 	}

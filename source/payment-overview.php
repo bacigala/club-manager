@@ -1,48 +1,41 @@
 
 <?php
-	date_default_timezone_set("Europe/Bratislava");
-	session_start();
-	include('functions.php');
-	include('db.php');
-    include('login-verify.php'); // login check
-	header_include();
-
-	if (isset($_SESSION['has_user']) && $_SESSION['has_user']) {
-		// user logged-in
-		nav_include(true);
-
-		if (!isset($_SESSION['user_is_accountant']) || !$_SESSION['user_is_accountant']) {
-			echo 'Na prístup k tejto stránke nemáte oprávnenie.';
-			die();
-		}
-		// accountant logged-in
+    date_default_timezone_set("Europe/Bratislava");
+    session_start();
+    include('db.php');              /* @var mysqli $mysqli */
+    include('functions.php');       // basic functions
+    include('login-verify.php');    // login/logout
+    header_include();
+    require_user_logged_in();
+    require_user_level('accountant');
+    nav_include();
+    include('item-functions.php');
 ?>
 
-<section class="full-width-section">
-  <h1>Platby - prehľad</h1>
-	<div id="sectionh1negativemarginfix"></div>
+<section class="full-width">
+    <h1>Platby</h1>
+    <p class="info">
+        Tu sú zobrazené všetky vytvorené platby. Predstavujú spojenie medzi položkou a klientom.<br>
+        Podľa parametrov môže byť platba v stave "neuhradená" alebo "uhradená", v oboch prípadoch i "po splatnosti".
+    </p>
     <?php session_result_echo(); ?>
     <button class="button-create-new" onclick="window.location.href = 'payment-modify.php';">Nová platba</button>
-	<table>
-		<tr>
-			<th>Vytvorené</th>
-			<th>Klient</th>
-			<th>Položka</th>
-			<th>Množstvo</th>
-			<th>Suma</th>
-			<th>Platba</th>
-			<th>Možnosti</th>
-		</tr>
-		<?php get_all_payments($mysqli); ?>
-	</table>
-	
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>Vytvorené</th>
+                <th>Klient</th>
+                <th>Položka</th>
+                <th>Množstvo</th>
+                <th>Suma</th>
+                <th>Platba</th>
+                <th>Možnosti</th>
+            </tr>
+            <?php get_all_payments($mysqli); ?>
+        </table>
+    </div>
 </section>
 
 <?php
-		include('footer.php');
-	} else {
-		// user NOT logged-in
-		include('login-form.php');
-	}	
+    include('footer.php');
 ?>
-

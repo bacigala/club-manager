@@ -1,3 +1,4 @@
+
 <aside>
 	<div class="aside-part">	
 		<p class="aside-part-headline">Prihlásený používateľ</p>
@@ -12,7 +13,7 @@
 		<p class="aside-part-headline">Info</p>
 		<div class="aside-part-content">
 			<p>Tu sa si môžete pozrieť dochádzku.</p>
-				<p class="warning">Pre niektoré udalosti nemusí byť dochádzka zaznamenávaná.</p>
+            <p class="warning">Pre niektoré udalosti nemusí byť dochádzka zaznamenávaná.</p>
 		</div>
 	</div>
 </aside>
