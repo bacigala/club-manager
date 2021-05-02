@@ -1,6 +1,6 @@
 
 /**
- * toogle displayed payment detail in payment-modification form WAIT / DONE
+ * toogle displayed payment detail in payment-modify form (WAIT / DONE)
  */
 function payment_wait() {
 	document.getElementById("payment-wait-detail").style.display = 'block';

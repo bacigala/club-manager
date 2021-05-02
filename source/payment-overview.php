@@ -1,5 +1,10 @@
 
 <?php
+
+    /*
+     * Page for accountant - all payment overview.
+     */
+
     date_default_timezone_set("Europe/Bratislava");
     session_start();
     include('db.php');              /* @var mysqli $mysqli */
@@ -9,7 +14,7 @@
     require_user_logged_in();
     require_user_level('accountant');
     nav_include();
-    include('item-functions.php');
+    include('payment-functions.php');
 ?>
 
 <section class="full-width">

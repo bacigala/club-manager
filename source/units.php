@@ -8,6 +8,7 @@
     header_include();
     require_user_logged_in();
     nav_include();
+    include('units-functions.php');
 ?>
 
 <section>
@@ -25,7 +26,7 @@
                 <th>Stav</th>
                 <th>Možnosti</th>
             </tr>
-            <?php get_units_of_client($mysqli, 'course'); ?>
+            <?php get_units_of_client_tr($mysqli, 'course'); ?>
         </table>
     </div>
 
@@ -38,7 +39,7 @@
                 <th>Stav</th>
                 <th>Možnosti</th>
             </tr>
-            <?php get_units_of_client($mysqli, 'event'); ?>
+            <?php get_units_of_client_tr($mysqli, 'event'); ?>
         </table>
     </div>
 
@@ -51,7 +52,7 @@
                 <th>Stav</th>
                 <th>Možnosti</th>
             </tr>
-            <?php get_units_of_client($mysqli, 'occurence'); ?>
+            <?php get_units_of_client_tr($mysqli, 'occurence'); ?>
         </table>
     </div>
 </section>

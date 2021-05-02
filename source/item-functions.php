@@ -249,3 +249,33 @@ function handle_item_modify($mysqli) {
 
     get_item_form($mysqli);
 }
+
+
+function get_unit_options($mysqli, $selected = false) {
+    $query  = "SELECT unit.id, unit.name, unit.type FROM unit ORDER BY type ASC, name ASC";
+    $result = db_query($mysqli, $query);
+    if (!is_null($result) && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $type = '';
+            switch ($row['type']) {
+                case 'course':
+                    $type = ' (kurz)';
+                    break;
+                case 'event':
+                case 'singleevent':
+                    $type = ' (udalosť)';
+                    break;
+                case 'occurrence':
+                    $type = ' (výskyt)';
+                    break;
+            }
+
+            $output = '<option value="' . $row['id'] . '" ';
+            if ($selected && $selected == $row['id']) $output .= 'selected';
+            $output .= '>' . $row['name'] . $type . '</option>';
+
+            echo $output;
+        }
+        $result->free();
+    }
+}
