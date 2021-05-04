@@ -102,7 +102,7 @@ section {
 	background-color: white;
 	padding: 20px;
 	display: block;
-	overflow: hidden;
+	overflow: visible;
 }
 
 	section h1 {
@@ -112,8 +112,6 @@ section {
 		padding: 20px;
 		margin: -20px;
 	}
-
-
 
 	section h2 {
 		width: calc(100% - 20px);
@@ -387,6 +385,7 @@ table {
 
 table tr {
 	border-bottom: 1px solid black;
+	overflow-y: visible;
 }
 
 table th {
@@ -400,6 +399,7 @@ table .warn {
 
 .head-row {
 	background-color: skyblue;
+	padding-top: 10px;
 }
 
 .highlight {
@@ -413,6 +413,36 @@ table .warn {
 table input[type="checkbox"] {
 	margin: 0 5px 0 15px;
 }
+
+/* table */
+.unit-details tr:hover{
+	/*background-color: #7aff68;*/
+}
+
+.unit-details input[type="text"] {
+	/*border-bottom: none;*/
+}
+
+/* injection tr */
+.unit_detail_container {
+	background-color: greenyellow;
+	border-bottom: none;
+}
+
+/* injection div */
+.unit_detail {
+	width: calc(100% - 20px);
+	display: inline-block;
+	background-color: whitesmoke;
+	margin: 0 10px;
+}
+
+table input {
+	border : none;
+	text-align: center;
+	border-bottom: 1px solid skyblue;
+}
+
 
 /* ---------- ---------- ---------- MAIN FORM (IN SECTION) ---------- ---------- ---------- */
 .master-form {
@@ -487,9 +517,22 @@ table input[type="checkbox"] {
 }
 
 /* ---------- ---------- ---------- AUTOCOMPLETE DROPDOWN ---------- ---------- ---------- */
+
+.autocomplete-form {
+	height: 2em;
+	width: 100%;
+	text-align: left;
+}
+
 .autocomplete {
-	position: relative;
-	display: inline-block;
+	position: absolute;
+	padding: 3px;
+	display: inline;
+	min-width: 40%;
+}
+
+.autocomplete:before {
+	content: "Pridať: ";
 }
 
 .autocomplete-items {
@@ -500,23 +543,34 @@ table input[type="checkbox"] {
 	z-index: 99;
 	top: 100%;
 	left: 0;
-	right: 0;
 }
 
 .autocomplete-items div {
-	padding: 10px;
+	background-color: ghostwhite;
+	padding: 3px;
 	cursor: pointer;
-	background-color: white;
-	border-bottom: 1px solid whitesmoke;
+	border-bottom: 1px solid lightslategray;
 }
 
 .autocomplete-items div:hover {
-	background-color: whitesmoke;
+	background-color: rgba(141, 220, 255, 0.87);
 }
 
 .autocomplete-active {
-	background-color: dodgerblue !important;
-	color: white;
+	background-color: rgba(141, 220, 255, 0.87) !important;
+}
+
+.suggestion-button {
+	margin: 0 5px;
+	padding: 3px;
+}
+
+.suggestion-button-add {
+	background-color: palegreen;
+}
+
+.suggestion-button-invite {
+	background-color: #f5f564;
 }
 
 /* ---------- ---------- ---------- OTHER ---------- ---------- ---------- */

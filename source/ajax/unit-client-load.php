@@ -18,7 +18,9 @@
 	$query .= " AND status<>'retract' AND status<>'restrict' ORDER BY status ASC";
 	$result = db_query($mysqli, $query);
     $output = '<table>';
+    $has_clients = false;
 	if (!is_null($result) && $result->num_rows > 0) {
+	    $has_clients = true;
         // query ok -> populate table
 		while ($row = $result->fetch_assoc()) {	
 			$output .= '<tr>';
@@ -31,14 +33,14 @@
                 case 'manual':
                 case 'accept':
                 case 'approve':
-                    $output .= '<input type="button" name="" value="Vyhodit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
+                    $output .= '<input type="button" name="" class="main-form-option-button" value="Vyhodit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
                     break;
                 case 'request':
-    				$output .= '<input type="button" name="" value="Povolit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'approve\');">';
-	    			$output .= '<input type="button" name="" value="Zamietnut" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'restrict\');">';
+    				$output .= '<input type="button" name="" class="main-form-option-button" value="Povolit" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'approve\');">';
+	    			$output .= '<input type="button" name="" class="main-form-option-button" value="Zamietnut" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'restrict\');">';
 		            break;
                 case 'invite':
-                    $output .= '<input type="button" name="" value="Stiahnut pozvanku" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
+                    $output .= '<input type="button" name="" class="main-form-option-button" value="Stiahnut pozvanku" onClick="update_unit_client_status(this, \'' . $row['unit_id'] . '\', \'' . $row['client_id'] . '\', \'leave\');">';
                     break;
 			}
 			
@@ -48,14 +50,14 @@
 	} else {
 		// error || no clients found
         $output .= '<tr>';
-        $output .= ' <td colspan="2">No clients found</td>';
+        $output .= ' <td colspan="2">Bez klientov.</td>';
         $output .= '</tr>';
 	}
 
     // option to add/invite client
     $output .= '<tr>';
-    $output .= ' <td colspan="2">';
-    $output .=   '<form autocomplete="off">';
+    $output .= ' <td colspan="' . ($has_clients ? '3' : '2') .'">';
+    $output .=   '<form autocomplete="off" class="autocomplete-form">';
     $output .=    '<div class="autocomplete">';
     $output .=     '<input class="clientSearch' . $unit_id . '" type="text" name="name" placeholder="Ferko">';
     $output .=    '</div>';

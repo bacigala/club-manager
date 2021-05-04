@@ -23,9 +23,9 @@
 
 <script src="attendance-admin-functions.js"></script>
 
-<section>
+<section class="full-width">
   <h1>Dochádzka</h1>
-	<div id="sectionh1negativemarginfix"></div>
+    <?php get_unit_detail($mysqli); ?>
 
 	<h2>Záznamy</h2>
     <div class="table-container">
@@ -42,7 +42,6 @@
 </section>
 
 <?php
-		include('attendance-aside.php');
 		include('footer.php');
 	} else {
 		// user NOT logged-in

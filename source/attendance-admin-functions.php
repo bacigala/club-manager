@@ -35,3 +35,24 @@ function unit_get_attendance($mysqli) {
 	    echo "Bez používatelov.";
     }
 }
+
+function get_unit_detail($mysqli) {
+    $unit_id = intval(post_escaped('unit_id'));
+    if ($unit_id < 1) {
+        echo "no attendance for such unit";
+        die();
+    }
+
+    $query = "SELECT * FROM unit WHERE id ='$unit_id'";
+
+    $result = db_query($mysqli, $query);
+    if (!is_null($result) && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $output  = '<p class="info">';
+        $output .= "Udalosť: {$row['name']} čas: {$row['start_datetime']} - {$row['end_datetime']}";
+        $output .= '</p>';
+        echo $output;
+    } else {
+        echo "Bez informacii.";
+    }
+}

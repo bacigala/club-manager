@@ -29,27 +29,34 @@ function get_units_of_lector($mysqli, $type) {
 		    $class = ($row['id'] == $highlight_id ? ' class="warn " ' : '');
 
 			$output  = '<tr ' . $onclick . $class . '>'; // onClick -> ajax load of unit details
-			$output .= '<td>' . $row['name'] . '</td>';
-			
+
+            // name
+			$output .= "<td class='unit_{$row['id']}_name_label'>{$row['name']}</td>";
+
+			// type
 			if ($type == 'event')	{
 				if ($row['type'] == 'event') $output .= '<td>Udalosť s výskytmi</td>';
 				if ($row['type'] == 'singleevent') $output .= '<td>Jednorazová udalosť</td>';
 			}
-			
-			$output .= '<td>' . (is_null($row['no_clients']) ? '0' : $row['no_clients']) . '/' . $row['max_clients'] . '</td>';
-			
+
+			// capacity
+			$output .= "<td><span class='unit_{$row['id']}_no_clients_label'>" . (is_null($row['no_clients']) ? '0' : $row['no_clients']) . '</span>/'
+                    . "<span class='unit_{$row['id']}_max_clients_label'>" . $row['max_clients'] . '</span></td>';
+
+			// registration
+            $output .= "<td class='unit_{$row['id']}_registration_label'>";
 			switch ($row['registration']) {
 				case 'open':
-					$output .= '<td>Otvorená</td>';
+					$output .= 'Otvorená</td>';
 					break;					
 				case 'close':
-					$output .= '<td>Uzavretá</td>';
+					$output .= 'Uzavretá</td>';
 					break;
 				case 'invite':
-					$output .= '<td>Na pozvánku</td>';
+					$output .= 'Na pozvánku</td>';
 					break;
 				case 'request':
-					$output .= '<td>Na požiadanie</td>';
+					$output .= 'Na požiadanie</td>';
 					break;
 			}
 			
@@ -57,22 +64,21 @@ function get_units_of_lector($mysqli, $type) {
 			$output .= '<form method="post" class="table-form" action="unit-admin-overview.php">';
 			$output .= '	<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
 			$unit_id = $row['id'];
-			if ($row['author_id'] == $_SESSION['user_id']) $output .= "<input type='button' value='todo Odstrániť' onclick='unit_delete($unit_id)' class='main-form-option-button'/>";
+			//if ($row['author_id'] == $_SESSION['user_id']) $output .= "<input type='button' value='todo Odstrániť' onclick='unit_delete($unit_id)' class='main-form-option-button'/>";
 			$output .= '</form>';
 
 			if ($row['type'] == 'singleevent' && $row['attendance'] == '1') {
                 $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php">';
                 $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
-                $output .= '<input type="submit" name="" value="Dochádzka" class="main-form-option-button" />';
+                $output .= '<input type="submit" name="" value="Dochádzka" class="main-form-option-button" onclick="event.stopPropagation();" />';
                 $output .= '</form>';
             }
-
 
 			$output .= '</td>';
 			$output	.= '</tr>';
 			
 			$colspan = ($type == 'event') ? 5 : 4;
-			$output .= '<tr style="display: none;"><td colspan="' . $colspan . '"><div class="unit_detail"></div></td></tr>'; // div to render unit_details
+			$output .= '<tr style="display: none;" class="unit_detail_container"><td colspan="' . $colspan . '"><div class="unit_detail"></div></td></tr>'; // div to render unit_details into
 			
 			echo $output;
 		}
