@@ -50,8 +50,16 @@ function db_item_update($mysqli, $item_id, $item_data, $author_id = false) {
 }
 
 function db_item_delete($mysqli, $item_id) {
-    $query = "DELETE FROM item WHERE id=$item_id";
-    return $mysqli->query($query);
+    $mysqli->begin_transaction();
+    try {
+        $query = "DELETE FROM item WHERE id=$item_id";
+        $result = $mysqli->query($query);
+        $mysqli->commit();
+    } catch (mysqli_sql_exception $e) {
+        $mysqli->rolback();
+        return false;
+    }
+    return $result;
 }
 
 
@@ -139,18 +147,16 @@ function handle_item_modify($mysqli) {
                     if (db_item_delete($mysqli, $item_id))
                         session_result('success', 'Položka bola odstránená.');
                     else
-                        session_result('error', "Položku nebolo možné odstrániť.");
+                        session_result('error', "Položku nemožno odstrániť. (Brániť tomu môže napríklad existujúca platba s ňou asociovaná.");
                     break;
             }
         } catch (mysqli_sql_exception $exception) {
             session_result('error', 'Akciu sa nepodarilo vykonať. (exception)' . $exception);
-            if ($request_type == 'delete') {
-                $_SESSION['result_message'] = 'Položku nemožno odstrániť. (Brániť tomu môže napríklad existujúca platba s ňou asociovaná.)';
-            }
         } finally {
             $_SESSION['result_message'] .= $mysqli->error;
             if ($_SESSION['result_message_type'] == 'error' || !empty($_SESSION['error'])) {
                 // stay on this page
+                $_SESSION['data'] = get_item_form_data();
                 header("Location: item-modify.php");
             } else {
                 // go to item overview
@@ -168,7 +174,7 @@ function handle_item_modify($mysqli) {
         foreach ($_SESSION['error'] AS $value)
             echo '<p class="error">' . $value . '</p>' ;
         unset($_SESSION['error']);
-        get_item_form($mysqli, $item_id>0?"modify":"create", $_SESSION['data']);
+        get_item_form($mysqli, $item_id>0?"modify":"create", isset($_SESSION['data']) ? $_SESSION['data'] : false);
         unset($_SESSION['data']);
     } else {
         get_item_form($mysqli);
@@ -207,7 +213,7 @@ function get_item_form_data() {
     $data['delay'] = intval(post_escaped('delay'));
 
     // if data are not being send to DB (due to an error), these are used to pre-fill form again
-    if (!empty($error)) {
+    if (!empty($error) || (isset($_SESSION['result_message_type']) && $_SESSION['result_message_type'] == 'error' )) {
         $data['id'] = post_escaped('item_id');
     }
 
