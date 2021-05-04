@@ -443,6 +443,10 @@ table input {
 	border-bottom: 1px solid skyblue;
 }
 
+table tr.submerged th {
+	background-color: mediumseagreen;
+}
+
 
 /* ---------- ---------- ---------- MAIN FORM (IN SECTION) ---------- ---------- ---------- */
 .master-form {
@@ -543,6 +547,7 @@ table input {
 	z-index: 99;
 	top: 100%;
 	left: 0;
+	box-shadow: 5px 4px 8px 0 rgba(79, 212, 201, 0.7), -5px 4px 8px 0 rgba(79, 212, 201, 0.7);
 }
 
 .autocomplete-items div {

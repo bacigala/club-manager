@@ -93,7 +93,7 @@ if (!is_null($result) && $result->num_rows > 0) {
 		}
 
 		// lectors - ajax load on click
-		$output .= '<tr onclick="load_unit_lectors(this, this.nextSibling,  ' . $row['id'] . ')" class="head-row"><td colspan="' . 2 . '">Lektori</td></tr>';
+		$output .= '<tr onclick="load_unit_subsection(this, this.nextSibling,  ' . $row['id'] . ', \'lector\')" class="head-row"><td colspan="' . 2 . '">Lektori</td></tr>';
 		$output .= '<tr style="display: none;" class="unit_detail_container"><td colspan="' . 2 . '"><div class="unit_detail unit' . $row['id'] . 'lectorListContainer"></div></td></tr>'; // div to render lectors
 
 		// clients - ajax load on click

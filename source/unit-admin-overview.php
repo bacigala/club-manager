@@ -18,7 +18,7 @@
     <h1>Skupiny a udalosti</h1>
     <p class="info">
         Tu môžete spravovať dostupné skupiny a udalosti. Kliknite na skupinu alebo udalosť pre zobrazenie a úpravu detailov.<br>
-        <strong>Skupiny</strong> sú množinami klientov a (alebo) udasostí a slúžia pre hromadnú manipuláciu s nimi.<br>
+        <strong>Skupiny</strong> sú množinami klientov a (alebo) udalostí a slúžia pre hromadnú manipuláciu s nimi.<br>
         <strong>Udalosti</strong> sú buď to jedorazové alebo s viacnásobným výskytom, môžu byť súčasťou skupiny.
     </p>
 

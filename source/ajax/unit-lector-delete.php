@@ -1,14 +1,15 @@
 <?php
 
-	session_start();
-	include('../db.php');
-	include('../functions.php');
+    session_start();
+    include('../functions.php');
+    require_user_level('lector');
+    include('../db.php'); /* @var mysqli $mysqli */
 
-	// get GET parameters
-	$unit_id = $_REQUEST["unitID"];
-	$lector_id = $_REQUEST["lectorID"];
+    // get parameters
+	$unit_id = post_escaped("unitID");
+	$lector_id = post_escaped("lectorID");
 	
-	// UPDATE
+	// query
 	$query = "DELETE FROM unit_account WHERE unit_id=$unit_id AND account_id = $lector_id";
 		if (!($result = $mysqli->query($query))) {
 			echo 'nevyslo to';

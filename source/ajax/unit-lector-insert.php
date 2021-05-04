@@ -1,23 +1,15 @@
 <?php
 
-    // user needs to be tutor
     session_start();
-    if (!isset($_SESSION['user_is_tutor']) || !$_SESSION['user_is_tutor']) {
-        echo 'Na prístup k tejto stránke nemáte oprávnenie.';
-        die();
-    }
+    include('../functions.php');
+    require_user_level('lector');
+    include('../db.php'); /* @var mysqli $mysqli */
 
-	include('../db.php');
-
-    // get request parameters
-	$unit_id = $_REQUEST["unitID"];
-	$lector_id = $_REQUEST["lectorID"];
+    // get parameters
+    $unit_id = post_escaped("unitID");
+    $lector_id = post_escaped("lectorID");
 
 	// query DB
 	$query = "INSERT INTO unit_account SET unit_id=$unit_id, account_id = $lector_id";
-	echo $query;
-    if ($mysqli->query($query)) {
-        echo '';
-    } else {
-        echo $mysqli->error;
-    }
+    if (!$mysqli->query($query))
+        echo "Lektora nebolo možné pridať k udalosti.\n" . $mysqli->error;

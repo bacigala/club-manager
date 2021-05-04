@@ -8,7 +8,6 @@
 
 	// get GET parameters
 	$unit_id = $_REQUEST["unitID"];
-	//$type = $_REQUEST["type"];
 
 	$query = "SELECT type FROM unit WHERE id=$unit_id";
     $result = db_query($mysqli, $query);
@@ -35,6 +34,12 @@
 	if (!is_null($result) && $result->num_rows > 0) {
 	    $has_output = true;
 	    // query ok -> populate table
+
+        // header row
+        $output .= "<tr class='submerged'><th>Názov</th>";
+        if ($type == 'event') $output  .= "<th>Typ</th>";
+        $output .= "<th>Obsadenosť</th><th>Rgistrácia</th><th>Možnosti</th></tr>";
+
 		while ($row = $result->fetch_assoc()) {
             $onclick = ' onclick="load_unit_details(this, ' . $row['id'] . ')" ';
             $output  .= '<tr ' . $onclick . '>'; // onClick -> ajax load of unit details
@@ -76,7 +81,7 @@
             //if ($row['author_id'] == $_SESSION['user_id']) $output .= "<input type='button' value='todo Odstrániť' onclick='unit_delete($unit_id)' class='main-form-option-button'/>";
             $output .= '</form>';
 
-            if ($row['type'] == 'singleevent' && $row['attendance'] == '1') {
+            if (($row['type'] == 'singleevent' || $row['type'] == 'occurrence') && $row['attendance'] == '1') {
                 $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php">';
                 $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
                 $output .= '<input type="submit" name="" value="Dochádzka" class="main-form-option-button" />';
@@ -101,7 +106,7 @@
 	// todo OPTION TO ADD OCURRENCE FOR EVENT
     if ($type == 'occurence') {
         $output .= '<tr>';
-        $output .= ' <td colspan="' . ($has_output ? '3' : '1') . '">';
+        $output .= ' <td colspan="' . ($has_output ? '5' : '1') . '">';
         $output .= '<div class="autocomplete-form">';
         $output .= '<div class="autocomplete">';
         $output .= "<button class='button-create-new' onclick='create_ocurrence(this, {$unit_id})'>Nový výskyt</button>";
@@ -110,8 +115,6 @@
         $output .= '</td>';
         $output .= '</tr>';
     }
-
-
 
 
     // OPTION TO ADD EVENT / SINGLEEVENT TO COURSE
