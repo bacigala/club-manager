@@ -1,12 +1,11 @@
 
 /**
- * Create new course click.
+ * Create new unit (BUTTON click)
  */
 function create_unit(type) {
 	let name = window.prompt("Názov:", "");
 	if (name === null) return;
 
-	// ajax - create new coursse
 	let xhttp = new XMLHttpRequest();
 	xhttp.overrideMimeType('application/xml');
 	xhttp.onreadystatechange = function() {
@@ -23,28 +22,6 @@ function create_unit(type) {
 	xhttp.send();
 }
 
-/**
- *	Create ocurrence button click.
- */
-function create_ocurrence(caller, unit_id) {
-	caller.enabled = false;
-	event.stopPropagation();
-	let name = window.prompt("Názov:", "Nový výskyt udalosti");
-	if (name === null) return;
-	let xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState === 4 && this.status === 200) {
-			if (this.responseText !== '')
-				window.alert("CHYBA!\nVýkyt sa nepodarilo vytvoriť.\n" + this.responseText);
-			caller.enabled = true;
-			refresh_unit_list(unit_id);
-		}
-	};
-	xhttp.open("GET", "ajax/ocurrence-create.php?unitID="+unit_id+"&name="+name, true);
-	xhttp.send();
-}
-
-
 
 
 /*
@@ -52,7 +29,7 @@ function create_ocurrence(caller, unit_id) {
  */
 
 /**
- * Called by click on unit in admin-unit-ovreview
+ * Called by click on unit row in admin-unit-ovreview table.
  * Ajax call to render unit details in next table row.
  */
 function load_unit_details(caller, unit_id, target = null) {
@@ -80,10 +57,10 @@ function load_unit_details(caller, unit_id, target = null) {
 
 /**
  * Update general unit details (name, capacity, venue...)
+ * Called by "save" button next to detail.
  */
 function update_unit_detail(caller, unit_id) {
 	caller.previousElementSibling.readOnly = true;
-	//caller.style.backgroundColor = "orange";
 	let xhttp = new XMLHttpRequest();
 	xhttp.overrideMimeType('application/xml');
 	xhttp.onreadystatechange = function() {
@@ -112,17 +89,16 @@ function update_unit_detail(caller, unit_id) {
 }
 
 /**
- * Deletes the unit, offers choice to deleta all or just 'close'.
- * @param unit_id
+ * todo Delete the unit, offer choice to delete all or just 'close'.
  */
 function unit_delete(unit_id) {
-	//todo
 	window.alert("delete unit " + unit_id);
 }
 
 
+
 /*
- *	todo UNIT ACCORDION SUBSECTIONS - lectors / clients / ocurrences / events
+ *	UNIT ACCORDION SUBSECTIONS - lectors / clients / units
  */
 // called by clicking on subsection <tr> - renders subsection in target
 function load_unit_subsection(caller, target, unit_id, type) {
@@ -151,7 +127,7 @@ function refresh_unit_subsection(unit_id, type) {
 			let that = this;
 			Array.prototype.forEach.call(target, function (t) {
 				t.innerHTML = that.responseText;
-				setup_subsection_autocomplete(unit_id, 'lector');
+				setup_subsection_autocomplete(unit_id, type);
 			});
 		}
 	};
@@ -182,8 +158,8 @@ function setup_subsection_autocomplete(unit_id, type) {
 				suggestion_id.push(ids[i].childNodes[0].nodeValue);
 
 
-			// 'activate' autocomplete for each lector-search-input of this unit
-			let autocomplete_elements = document.getElementsByClassName("lectorSearch" + unit_id);
+			// create autocomplete html for each suggestion
+			let autocomplete_elements = document.getElementsByClassName(type +"Search" + unit_id);
 			Array.prototype.forEach.call(autocomplete_elements, function(element) {
 				autocomplete_setup(element, suggestion_text, suggestion_id, unit_id, type);
 			});
@@ -198,7 +174,22 @@ function setup_subsection_autocomplete(unit_id, type) {
 /*
  * UNIT LECTORS
  */
+// called e.g. on click in lector suggestions for unit
+function insert_unit_lector(unit_id, lector_id, callback) {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			if (this.responseText !== '')
+				window.alert(this.responseText);
+			callback(this.responseText === '');
+		}
+	};
+	xhttp.open("POST", "ajax/unit-lector-insert.php", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("unitID=" + unit_id + "&lectorID=" + lector_id);
+}
 
+// called on "save" button click in unit-lector subsection -> update "is_editor"
 function update_unit_lector(caller, unit_id, lector_id) {
 	caller.disabled = true;
 	caller.value = "WAIT...";
@@ -216,6 +207,7 @@ function update_unit_lector(caller, unit_id, lector_id) {
 	xhttp.send("unitID="+unit_id+"&lectorID="+lector_id+"&is_editor="+is_editor);
 }
 
+// called on "delete" button click in unit-lector subsection -> delete unit-lecotr association
 function delete_unit_lector(caller, unit_id, lector_id) {
 	caller.disabled = true;
 	caller.value = "WAIT...";
@@ -242,77 +234,7 @@ function delete_unit_lector(caller, unit_id, lector_id) {
  * UNIT CLIENTS
  */
 
-function load_unit_clients(caller, unit_id) {
-	let display = caller.nextSibling.style.display;
-	if (display === '') {
-		caller.nextSibling.style.display = 'none';
-		caller.style.backgroundColor = '';
-	} else {
-		caller.style.backgroundColor = "mediumseagreen";
-		caller.nextSibling.style.display = ''; // show nextSibling
-		caller.nextSibling.firstChild.firstChild.innerHTML = "WAIT...";
-		let xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState === 4 && this.status === 200) {
-				caller.nextSibling.firstChild.firstChild.innerHTML = this.responseText;
-				setup_client_autocomplete(unit_id);
-			}
-		};
-		xhttp.open("GET", "ajax/unit-client-load.php?unitID="+unit_id, true);
-		xhttp.send();
-	}
-}
-
-function insert_unit_clients_table(unit_id, target) {
-	target.innerHTML = "Loading...";
-	let xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState === 4 && this.status === 200) {
-			target.innerHTML = this.responseText;
-			setup_client_autocomplete(unit_id);
-		}
-	};
-	xhttp.open("GET", "ajax/unit-client-load.php?unitID="+unit_id, true);
-	xhttp.send();
-}
-
-/**
- * Loads aailable clients (not added or invited to unit yet)
- * @param unit_id
- */
-function setup_client_autocomplete(unit_id) {
-	let xhttp = new XMLHttpRequest();
-	xhttp.overrideMimeType('application/xml');
-	xhttp.onreadystatechange = function() {
-		if (this.readyState === 4 && this.status === 200) {
-			// ajax ok
-			if (this.responseText === '') return;
-
-			// parse received XML
-			let xml = this.responseXML.documentElement;
-
-			let names = xml.getElementsByTagName("client");
-			let suggestion = [];
-			for (let i = 0; i < names.length; i++)
-				suggestion.push(names[i].childNodes[0].nodeValue);
-
-			let ids = xml.getElementsByTagName("id");
-			let suggestion_id = [];
-			for (let i = 0; i < ids.length; i++)
-				suggestion_id.push(ids[i].childNodes[0].nodeValue);
-
-
-			// 'activate' autocomplete for each client-search-input of this unit
-			let autocomplete_elements = document.getElementsByClassName("clientSearch" + unit_id);
-			Array.prototype.forEach.call(autocomplete_elements, function(element) {
-				autocomplete_setup(element, suggestion, suggestion_id, unit_id);
-			});
-		}
-	};
-	xhttp.open("GET", "ajax/unit-client-suggestion.php?unitID="+unit_id, true);
-	xhttp.send();
-}
-
+// button click in unit-client subsection
 function update_unit_client_status(caller, unit_id, client_id, desired_status) {
 	caller.disabled = true;
 	let xhttp = new XMLHttpRequest();
@@ -320,168 +242,88 @@ function update_unit_client_status(caller, unit_id, client_id, desired_status) {
 		if (this.readyState === 4 && this.status === 200) {
 			// ajax ok
 			caller.disabled = false;
-			refresh_client_list(unit_id)
+			refresh_unit_subsection(unit_id, 'client');
 		}
 	};
 	xhttp.open("GET", "ajax/unit-client-update.php?unitID="+unit_id+"&clientID="+client_id+"&status="+desired_status, true);
 	xhttp.send();
 }
 
-// function to be called on "client add/invite" button click
+// button click in CLIENT SUGGESTION LIST (client add/invite)
 function unit_add_client(client_id, unit_id, status = 'manual') {
 	// ajax query to add user to unit
 	let xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState === 4 && this.status === 200) {
-			if (this.responseText !== '') {
-				// query error
+			if (this.responseText !== '') { // error
 				window.alert("ERROR\n" + this.responseText);
 				return;
 			}
-			// ajax ok -> refresh client lists
-			refresh_client_list(unit_id);
+			// ajax ok
+			refresh_unit_subsection(unit_id, 'client');
 		}
 	};
 	xhttp.open("GET", "ajax/unit-client-insert.php?unitID="+unit_id+"&clientID="+client_id+"&status="+status, true);
 	xhttp.send();
 }
 
-// refresh client list of given unit
-function refresh_client_list(unit_id) {
-	let target = document.getElementsByClassName("unit" + unit_id + "clientListContainer");
-	Array.prototype.forEach.call(target, function (t) {
-		insert_unit_clients_table(unit_id, t);
-	});
-}
 
 
 /*
- * UNIT EVENTS (EVENTS OF COURSES / OCCURENCES OF EVENTS)
+ * UNIT UNITS (EVENTS OF COURSES / OCCURENCES OF EVENTS)
  */
-
-// called by clicking on "Events" <tr> - show/hide event list
-function load_unit_events(caller, target, unit_id) {
-	const display = target.style.display;
-	if (display === '') {
-		target.style.display = 'none';
-		caller.style.backgroundColor = '';
-		caller.style.color = '';
-	} else {
-		caller.style.backgroundColor = "mediumseagreen";
-		caller.style.color = 'white';
-		target.style.display = ''; // show
-		insert_unit_events_table(unit_id, target.firstChild.firstChild); //div for event list
-	}
-}
-
-// inserts table of unit lecotrs in target.innerHTML
-function insert_unit_events_table(unit_id, target, type) {
-	target.innerHTML = "Loading...";
-	let xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState === 4 && this.status === 200) {
-			target.innerHTML = this.responseText;
-			setup_unit_autocomplete(unit_id);
-		}
-	};
-	xhttp.open("GET", "ajax/unit-event-load.php?unitID=" + unit_id, true);
-	xhttp.send();
-}
-
-// refresh lector list of given unit
-function refresh_unit_list(unit_id) {
-	let target = document.getElementsByClassName("unit" + unit_id + "unitListContainer");
-	Array.prototype.forEach.call(target, function (t) {
-		t.innerHTML = "Loading...";
-	});
-	let xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState === 4 && this.status === 200) {
-			let target = document.getElementsByClassName("unit" + unit_id + "unitListContainer");
-			let that = this;
-			Array.prototype.forEach.call(target, function (t) {
-				t.innerHTML = that.responseText;
-				setup_unit_autocomplete(unit_id);
-			});
-		}
-	};
-	xhttp.open("GET", "ajax/unit-event-load.php?unitID=" + unit_id, true);
-	xhttp.send();
-}
 
 /**
- * Loads aailable lectors (not added to unit yet)
- * @param unit_id
+ *	Create ocurrence (BUTTON click)
  */
-function setup_unit_autocomplete(unit_id) {
+function create_ocurrence(caller, unit_id) {
+	caller.enabled = false;
+	event.stopPropagation();
+	let name = window.prompt("Názov:", "Nový výskyt udalosti");
+	if (name === null) return;
 	let xhttp = new XMLHttpRequest();
-	xhttp.overrideMimeType('application/xml');
 	xhttp.onreadystatechange = function() {
 		if (this.readyState === 4 && this.status === 200) {
-			// ajax ok
-			//window.alert("setup_unit_autocomplete\n" + this.responseText);
-			if (this.responseText === '') return;
-
-
-			// parse received XML
-			let xml = this.responseXML.documentElement;
-
-			let names = xml.getElementsByTagName("unit");
-			let suggestion = [];
-			for (let i = 0; i < names.length; i++)
-				suggestion.push(names[i].childNodes[0].nodeValue);
-
-			let ids = xml.getElementsByTagName("id");
-			let suggestion_id = [];
-			for (let i = 0; i < ids.length; i++)
-				suggestion_id.push(ids[i].childNodes[0].nodeValue);
-
-
-			// 'activate' autocomplete for each lector-search-input of this unit
-			let autocomplete_elements = document.getElementsByClassName("unitSearch" + unit_id);
-			//window.alert(autocomplete_elements.length + "\nsearch for: " + "unitSearch" + unit_id);
-			Array.prototype.forEach.call(autocomplete_elements, function(element) {
-				autocomplete_setup(element, suggestion, suggestion_id, unit_id, 'unit');
-				//window.alert("autocomplete setup " + unit_id);
-			});
+			if (this.responseText !== '')
+				window.alert("CHYBA!\nVýkyt sa nepodarilo vytvoriť.\n" + this.responseText);
+			caller.enabled = true;
+			refresh_unit_subsection(unit_id, 'unit')
 		}
 	};
-	xhttp.open("GET", "ajax/unit-unit-suggestion.php?unitID="+unit_id, true);
+	xhttp.open("GET", "ajax/ocurrence-create.php?unitID="+unit_id+"&name="+name, true);
 	xhttp.send();
 }
 
-function update_unit_unit(caller, unit_id, lector_id) {
-	caller.disabled = true;
-	caller.value = "WAIT...";
-	let is_editor = caller.previousElementSibling.checked;
-	let xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+// called e.g. on click in unit suggestions for course
+function insert_unit_unit(parent_id, child_id, callback) {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
-			// ajax ok
-			//refresh_lector_list(unit_id); // todo
-		}
-	};
-	xhttp.open("GET", "ajax/unit-lector-update.php?unitID="+unit_id+"&lectorID="+lector_id+"&is_editor="+is_editor, true);
-	xhttp.send();
-}
-
-function delete_unit_unit(caller, unit_id, lector_id) {
-	caller.disabled = true;
-	caller.value = "WAIT...";
-	let xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState === 4 && this.status === 200) {
-			if (this.responseText === 'true') {
-				caller.disabled = false;
-				//refresh_lector_list(unit_id); // todo
-				caller.value = "Ulozit";
-			} else {
+			if (this.responseText !== '')
 				window.alert(this.responseText);
-			}
+			callback(this.responseText === '');
 		}
 	};
-	xhttp.open("GET", "ajax/unit-lector-delete.php?unitID="+unit_id+"&lectorID="+lector_id, true);
+	xhttp.open("GET", "ajax/unit-unit-insert.php?parentID=" + parent_id + "&childID=" + child_id, true);
 	xhttp.send();
+}
+
+// called on button click in unit accordeon -  delete ocurrence of event OR detach event from course
+function unit_detach(caller, parent_id, child_id) {
+	caller.enabled = false;
+	event.stopPropagation();
+	let xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState === 4 && this.status === 200) {
+			if (this.responseText !== '')
+				window.alert("ERROR\n" + this.responseText);
+			caller.enabled = true;
+			refresh_unit_subsection(parent_id, 'unit')
+		}
+	};
+	xhttp.open("POST", "ajax/unit-unit-delete.php", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("parentID=" + parent_id + "&childID=" + child_id);
 }
 
 
@@ -493,9 +335,13 @@ function delete_unit_unit(caller, unit_id, lector_id) {
 // attach autocomplete div to input field
 function autocomplete_setup(input, suggestions, suggestions_ids, unit_id, type = 'client') {
 	let currentSuggestionFocus = -1;
-
 	// prepare <div>s for each suggestion
 	let preparedSuggestions = [];
+
+	let onInsertDone = function (result) {
+		if (result) refresh_unit_subsection(unit_id, type);
+	}
+
 	for (let i = 0; i < suggestions.length; i++) {
 		let suggestion = document.createElement("DIV");
 		let suggestion_name = document.createElement("span");
@@ -504,32 +350,17 @@ function autocomplete_setup(input, suggestions, suggestions_ids, unit_id, type =
 		switch (type) {
 			case 'lector':
 				/* Lector - add lecotr after click */
-				suggestion.addEventListener("click", function () {
-					const xhttp = new XMLHttpRequest();
-					xhttp.onreadystatechange = function () {
-						if (this.readyState === 4 && this.status === 200)
-							if (this.responseText !== '')
-								window.alert(this.responseText);
-							refresh_unit_subsection(unit_id, 'lector');
-					};
-					xhttp.open("POST", "ajax/unit-lector-insert.php", true);
-					xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-					xhttp.send("unitID=" + unit_id + "&lectorID=" + suggestions_ids[i]);
+				suggestion.addEventListener("click", function() {
+					insert_unit_lector(unit_id, suggestions_ids[i], onInsertDone);
 				});
 				break;
 			case 'unit':
 				/* Unit - add unit after click */
-				suggestion.addEventListener("click", function () {
-					const xhttp = new XMLHttpRequest();
-					xhttp.onreadystatechange = function () {
-						if (this.readyState === 4 && this.status === 200)
-							refresh_unit_list(unit_id);
-					};
-					xhttp.open("GET", "ajax/unit-unit-insert.php?parentID=" + unit_id + "&childID=" + suggestions_ids[i], true); //todo
-					xhttp.send();
+				suggestion.addEventListener("click", function() {
+					insert_unit_unit(unit_id, suggestions_ids[i], onInsertDone);
 				});
 				break;
-			default:
+			case 'client':
 				/* Client - offer buttoons ADD / INVITE */
 				let inputElement = document.createElement('input');
 				inputElement.type = "button";
@@ -593,7 +424,7 @@ function autocomplete_setup(input, suggestions, suggestions_ids, unit_id, type =
 		} else if (e.keyCode === 13) { // enter key
 			e.preventDefault(); // do not submit input form
 			if (currentSuggestionFocus > -1)
-				if (x) x[currentSuggestionFocus].click(); // simulate click on activr suggestion -> add
+				if (x) x[currentSuggestionFocus].click(); // simulate click on active suggestion -> add
 		}
 	});
 

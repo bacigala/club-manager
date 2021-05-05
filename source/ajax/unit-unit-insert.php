@@ -15,9 +15,6 @@
 
 	// query DB
 	$query = "INSERT INTO unit_unit SET parent_id=$parent_id, child_id = $child_id, author_id={$_SESSION['user_id']}";
-	echo $query;
-    if ($mysqli->query($query)) {
-        echo '';
-    } else {
+    if (!$mysqli->query($query)) {
         echo $mysqli->error;
     }

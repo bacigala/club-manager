@@ -26,4 +26,51 @@
                 echo $dom->saveXml();
             }
             break;
+        case 'client':
+            $query = "SELECT client.name, client.surname, client.id FROM client "
+                . " WHERE NOT EXISTS (SELECT 1 FROM unit_client WHERE unit_id=$unit_id AND client_id=client.id AND (date_leave IS NULL OR date_leave > NOW()))";
+            $result = $mysqli->query($query);
+            if (!is_null($result) && $result->num_rows > 0) {
+                $dom = new DOMDocument();
+                $dom->encoding = 'utf-8';
+                $dom->xmlVersion = '1.0';
+                $root = $dom->createElement('DBtransaction');
+                while ($row = $result->fetch_assoc()) {
+                    $child_node = $dom->createElement('suggestion', $row['name'] . ' ' . $row['surname']);
+                    $root->appendChild($child_node);
+                    $child_node2 = $dom->createElement('id', $row['id']);
+                    $root->appendChild($child_node2);
+                }
+                $dom->appendChild($root);
+                echo $dom->saveXml();
+            } else {
+                echo $mysqli->error;
+            }
+            break;
+        case 'unit':
+            $query = "SELECT unit.id, unit.name, unit.type FROM unit"
+                . " WHERE NOT EXISTS (SELECT 1 FROM unit_unit WHERE unit_unit.parent_id=$unit_id AND unit_unit.child_id = unit.id)"
+                . " AND (unit.type='event' OR unit.type='singleevent')";
+            //$query = "SELECT * FROM unit";
+            $result = $mysqli->query($query);
+            if (!is_null($result) && $result->num_rows > 0) {
+                $dom = new DOMDocument();
+                $dom->encoding = 'utf-8';
+                $dom->xmlVersion = '1.0';
+                $root = $dom->createElement('DBtransaction');
+                while ($row = $result->fetch_assoc()) {
+                    $child_node = $dom->createElement('suggestion', $row['name'] . ' (' . $row['type'] . ')');
+                    $root->appendChild($child_node);
+                    $child_node2 = $dom->createElement('id', $row['id']);
+                    $root->appendChild($child_node2);
+                }
+                $dom->appendChild($root);
+                echo $dom->saveXml();
+            }
+            break;
+
+
+
+
+
     }

@@ -13,7 +13,7 @@ function get_units_of_lector($mysqli, $type) {
 			. " (unit.author_id = " . $_SESSION['user_id'] . " OR (account_id = "  . $_SESSION['user_id'] . '))';
 	if ($type == 'course') 		$query .= " AND type = 'course'";
 	if ($type == 'event')  		$query .= " AND (type = 'event' OR type = 'singleevent')";
-	if ($type == 'occurence') $query .= " AND type = 'occurrence'";
+	//if ($type == 'occurence') $query .= " AND type = 'occurrence'";
 	
 	$query .= " GROUP BY unit.id ORDER BY unit.name ASC ";	
 

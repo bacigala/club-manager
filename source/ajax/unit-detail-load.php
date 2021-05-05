@@ -97,18 +97,18 @@ if (!is_null($result) && $result->num_rows > 0) {
 		$output .= '<tr style="display: none;" class="unit_detail_container"><td colspan="' . 2 . '"><div class="unit_detail unit' . $row['id'] . 'lectorListContainer"></div></td></tr>'; // div to render lectors
 
 		// clients - ajax load on click
-		$output .= '<tr onclick="load_unit_clients(this, ' . $row['id'] . ')" class="head-row"><td colspan="' . 2 . '">Účastníci</td></tr>';
+		$output .= '<tr onclick="load_unit_subsection(this, this.nextSibling,  ' . $row['id'] . ', \'client\')" class="head-row"><td colspan="' . 2 . '">Účastníci</td></tr>';
 		$output .= '<tr style="display: none;" class="unit_detail_container"><td colspan="' . 3 . '"><div class="unit_detail unit' . $row['id'] . 'clientListContainer"></div></td></tr>'; // div to render clients
 
         if ($row['type'] == 'course') {
             // EVENTS - ajax load on click FOR COURSES
-            $output .= '<tr onclick="load_unit_events(this, this.nextSibling, ' . $row['id'] . ' ,\'event\' )" class="head-row"><td colspan="' . 2 . '">Udalosti</td></tr>';
+            $output .= '<tr onclick="load_unit_subsection(this, this.nextSibling, ' . $row['id'] . ' ,\'unit\' )" class="head-row"><td colspan="' . 2 . '">Udalosti</td></tr>';
             $output .= '<tr style="display: none;" class="unit_detail_container"><td colspan="' . 3 . '"><div class="unit_detail unit' . $row['id'] . 'unitListContainer"></div></td></tr>'; // div to render events of course
         }
 
         if ($row['type'] == 'event') {
             // OCCURENCES - ajax load on click FOR EVENTS
-            $output .= '<tr onclick="load_unit_events(this, this.nextSibling, ' . $row['id'] . ' ,\'occurence\')" class="head-row"><td colspan="' . 2 . '">Výskyty</td></tr>';
+            $output .= '<tr onclick="load_unit_subsection(this, this.nextSibling, ' . $row['id'] . ' ,\'unit\')" class="head-row"><td colspan="' . 2 . '">Výskyty</td></tr>';
             $output .= '<tr style="display: none;" class="unit_detail_container"><td colspan="' . 3 . '"><div class="unit_detail unit' . $row['id'] . 'unitListContainer"></div></td></tr>'; // div to render ocurrences of event
         }
 
