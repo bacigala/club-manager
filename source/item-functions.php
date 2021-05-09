@@ -69,9 +69,10 @@ function db_item_delete($mysqli, $item_id) {
  * @param mysqli $mysqli
  * @param int $highlight_id id of te item <tr> to highlight
  */
-function get_item_list($mysqli, $highlight_id = null) {
+function get_item_list($mysqli, $highlight_id = null, $unit_id = false) {
     $query  = "SELECT item.id, item.name, item.price, item.start_date, item.end_date, unit.name AS 'unit_name'"
                 . " FROM item LEFT JOIN unit ON (item.unit_id = unit.id)"
+                . ($unit_id ? " WHERE unit_id='$unit_id'" : "")
                 . " ORDER BY name ASC, start_date DESC";
     $result = db_query($mysqli, $query);
     if (!is_null($result) && $result->num_rows > 0) {
@@ -317,6 +318,24 @@ function get_unit_options($mysqli, $selected = false) {
             if ($selected && $selected == $row['id']) $output .= 'selected';
             $output .= '>' . $row['name'] . $type . '</option>';
 
+            echo $output;
+        }
+        $result->free();
+    }
+}
+
+function echo_unit_info_header($mysqli, $unit_id) {
+    if (!$unit_id) return;
+
+    $query  = "SELECT * FROM unit WHERE id='$unit_id'";
+    $result = db_query($mysqli, $query);
+    if (!is_null($result) && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $output = "<h2>";
+            $output .= "Zobrazujem položky pre " . translate_unit_type($row['type']) . " " . $row['name'];
+            $output .= '(' . date_format(date_create($row['start_datetime']), "d.m.Y H:i");
+            $output .= ' - ' . date_format(date_create($row['end_datetime']), "d.m.Y H:i") . ')';
+            $output .= '</h2>';
             echo $output;
         }
         $result->free();

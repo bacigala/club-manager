@@ -15,17 +15,22 @@
     require_user_level('accountant');
     nav_include();
     include('transaction-functions.php');
+
+    $client_id = get_escaped('clientID', false, true);
 ?>
 
 <script src="transaction-functions.js"></script>
 
 <section class="full-width">
     <h1>Transakcie</h1>
+    <?php if (!$client_id) { ?>
     <p class="info">
         Tu sú zobrazené všetky vytvorené transakcie. Predstavujú spojenie viacerých platieb do skupiny, ktorej sú priradené platobné detaily.<br>
         Transakcie vytvárajú klienti.
     </p>
+    <?php } ?>
     <?php session_result_echo(); ?>
+    <?php echo_unit_info_header($mysqli, $client_id); ?>
     <div class="table-container">
         <table>
             <tr>
@@ -36,7 +41,7 @@
                 <th>Suma</th>
                 <th>Platba</th>
             </tr>
-            <?php get_all_transactions($mysqli); ?>
+            <?php get_all_transactions($mysqli, $client_id); ?>
         </table>
     </div>
 </section>

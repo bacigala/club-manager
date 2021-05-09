@@ -211,6 +211,13 @@ function echo_unit_subsection($mysqli, $unit_id) {
                 $output .= '</form>';
             }
 
+            // OPTION: view payments
+            $output .= '<button class="main-form-option-button" onclick="event.stopPropagation(); window.location.href = \'payment-overview.php?unitID=' . $row['id'] . '\';">Platby</button>';
+
+            // OPTION: view items
+            $output .= '<button class="main-form-option-button" onclick="event.stopPropagation(); window.location.href = \'item-overview.php?unitID=' . $row['id'] . '\';">Položky</button>';
+
+
             $output .= '</td>'; // options
             $output	.= '</tr>'; // header <tr> of unit
 

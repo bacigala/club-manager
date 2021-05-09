@@ -108,9 +108,10 @@ function post_escaped($key, $return_if_not_set = '') {
 	if (!isset($_POST[$key])) return $return_if_not_set;
 	return addslashes(trim(strip_tags($_POST[$key])));
 }
-function get_escaped($key) {
-    if (!isset($_GET[$key])) return '';
-    return addslashes(trim(strip_tags($_GET[$key])));
+function get_escaped($key, $return_if_not_set = '', $parse_integer = false) {
+    if (!isset($_GET[$key])) return $return_if_not_set;
+    $value = addslashes(trim(strip_tags($_GET[$key])));
+    return $parse_integer ? intval($value) : $value;
 }
 
 
@@ -237,5 +238,23 @@ function translate_payment_type($original_name) {
             return 'kredit';
         default:
             return '[neznáme]';
+    }
+}
+
+/**
+ * Translate DB unit.type to human-readable form.
+ */
+function translate_unit_type($original_name) {
+    switch ($original_name) {
+        case 'course':
+            return 'Skupina';
+        case 'singleevent':
+            return 'Jednorazová usalosť';
+        case 'event':
+            return 'Udalosť s výskytmi';
+        case 'occurrence':
+            return 'Výskyt udalosti';
+        default:
+            return $original_name;
     }
 }

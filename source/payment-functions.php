@@ -48,16 +48,18 @@ function db_payment_delete($mysqli, $payment_id) {
 }
 
 
-
-
 /*
  * Generate <tr>s for all-payments overview on payment-overview.php (for accountant)
  */
-function get_all_payments(mysqli $mysqli) {
-    $highlight_pid = isset($_GET['pid']) ? $_GET['pid'] : 0;
+function get_all_payments(mysqli $mysqli, $unit_id = false, $client_id = false) {
+    $highlight_pid = intval(get_escaped('pid'));
 
     $query  = "SELECT payment.id, payment.create_datetime, client.name, client.surname, item.name AS 'item_name', payment.amount, payment.unit_price, payment.pay_datetime"
-            . " FROM payment JOIN item ON (payment.item_id = item.id) JOIN client ON (client.id = payment.client_id) ORDER BY create_datetime DESC";
+            . " FROM payment JOIN item ON (payment.item_id = item.id) JOIN client ON (client.id = payment.client_id) "
+            . " WHERE TRUE "
+            . ($unit_id ? " AND unit_id='$unit_id' " : "")
+            . ($client_id ? " AND client_id='$client_id' " : "")
+            . " ORDER BY create_datetime DESC";
     $result = db_query($mysqli, $query);
     if (!is_null($result) && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -356,3 +358,36 @@ function get_client_options($mysqli, $selected = false) {
     }
 }
 
+function echo_unit_info_header($mysqli, $unit_id = false, $client_id = false) {
+    if (!$unit_id && !$client_id) return;
+
+    if ($unit_id) {
+        $query = "SELECT * FROM unit WHERE id='$unit_id'";
+        $result = db_query($mysqli, $query);
+        if (!is_null($result) && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $output = "<h2>";
+                $output .= "Zobrazujem platby pre " . translate_unit_type($row['type']) . " " . $row['name'];
+                $output .= '(' . date_format(date_create($row['start_datetime']), "d.m.Y H:i");
+                $output .= ' - ' . date_format(date_create($row['end_datetime']), "d.m.Y H:i") . ')';
+                $output .= '</h2>';
+                echo $output;
+            }
+            $result->free();
+        }
+    }
+
+    if ($client_id) {
+        $query = "SELECT * FROM client WHERE id='$client_id'";
+        $result = db_query($mysqli, $query);
+        if (!is_null($result) && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $output = "<h2>";
+                $output .= "Zobrazujem platby pre používateľa " . $row['name'] . " " . $row['surname'];
+                $output .= '</h2>';
+                echo $output;
+            }
+            $result->free();
+        }
+    }
+}

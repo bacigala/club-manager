@@ -3,9 +3,10 @@
 /*
  * Generate <tr>s for all-transactions overview on transaction-overview.php (for accountant)
  */
-function get_all_transactions(mysqli $mysqli) {
+function get_all_transactions($mysqli, $client_id = false) {
     $query  = "SELECT client.name AS 'client_name', client.surname, transaction.id, transaction.name AS 'transaction_name', variable_symbol, datetime_create, datetime_pay, price"
             . " FROM transaction JOIN client ON (transaction.client_id = client.id)"
+            . ($client_id ? "WHERE client.id='$client_id' " : "" )
             . " ORDER BY datetime_create DESC";
     $result = db_query($mysqli, $query);
     if (!is_null($result) && $result->num_rows > 0) {
@@ -24,6 +25,22 @@ function get_all_transactions(mysqli $mysqli) {
             $output .= ' </form></td>';
 
             $output .= '</tr>';
+            echo $output;
+        }
+        $result->free();
+    }
+}
+
+function echo_unit_info_header($mysqli, $client_id = false) {
+    if (!$client_id) return;
+
+    $query = "SELECT name, surname FROM client WHERE id='$client_id'";
+    $result = db_query($mysqli, $query);
+    if (!is_null($result) && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $output = "<h2>";
+            $output .= "Zobrazujem transakcie používateľa " . $row['name'] . " " . $row['surname'];
+            $output .= '</h2>';
             echo $output;
         }
         $result->free();

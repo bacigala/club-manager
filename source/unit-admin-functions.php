@@ -68,13 +68,20 @@ function get_units_of_lector($mysqli, $type) {
 			$output .= '</form>';
 
 			if ($row['type'] == 'singleevent' && $row['attendance'] == '1') {
-                $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php">';
+                $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php" style="display: inline">';
                 $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
                 $output .= '<input type="submit" name="" value="Dochádzka" class="main-form-option-button" onclick="event.stopPropagation();" />';
                 $output .= '</form>';
             }
 
-			$output .= '</td>';
+            // OPTION: view payments
+            $output .= '<button class="main-form-option-button" onclick="event.stopPropagation(); window.location.href = \'payment-overview.php?unitID=' . $row['id'] . '\';">Platby</button>';
+
+            // OPTION: view items
+            $output .= '<button class="main-form-option-button" onclick="event.stopPropagation(); window.location.href = \'item-overview.php?unitID=' . $row['id'] . '\';">Položky</button>';
+
+
+            $output .= '</td>';
 			$output	.= '</tr>';
 			
 			$colspan = ($type == 'event') ? 5 : 4;

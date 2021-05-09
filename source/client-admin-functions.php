@@ -15,12 +15,19 @@ function get_client_list($mysqli) {
 			$output .= '<td>' . $row['surname'] . '</td>';
 			$output .= '<td>' . $row['last_logon'] . '</td>';
 			
-			$output .= '<td><form method="post" class="table-form" action="client-modify.php">';
+			$output .= '<td><form method="post" class="table-form" action="client-modify.php" style="display: inline">';
 			$output .= '<input type="hidden" name="client_id" value="' . $row['id'] . '" />';
 			$output .= '<input type="submit" class="main-form-option-button" name="modify_request" value="Upraviť"/>';
-			$output .= '</form></td>';
+			$output .= '</form>';
 
-			$output	.= '</tr>';
+            // OPTION: view payments
+            $output .= '<button class="main-form-option-button" onclick="event.stopPropagation(); window.location.href = \'payment-overview.php?clientID=' . $row['id'] . '\';">Platby</button>';
+
+            // OPTION: view transactions
+            $output .= '<button class="main-form-option-button" onclick="event.stopPropagation(); window.location.href = \'transaction-overview.php?clientID=' . $row['id'] . '\';">Transakcie</button>';
+
+
+            $output	.= '</td></tr>';
 			echo $output;
 		}
 		$result->free();

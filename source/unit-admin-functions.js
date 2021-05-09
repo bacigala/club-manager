@@ -157,11 +157,16 @@ function setup_subsection_autocomplete(unit_id, type) {
 			for (let i = 0; i < ids.length; i++)
 				suggestion_id.push(ids[i].childNodes[0].nodeValue);
 
+			let types = xml.getElementsByTagName("type");
+			let suggestion_type = [];
+			for (let i = 0; i < types.length; i++)
+				suggestion_type.push(types[i].childNodes[0].nodeValue);
+
 
 			// create autocomplete html for each suggestion
 			let autocomplete_elements = document.getElementsByClassName(type +"Search" + unit_id);
 			Array.prototype.forEach.call(autocomplete_elements, function(element) {
-				autocomplete_setup(element, suggestion_text, suggestion_id, unit_id, type);
+				autocomplete_setup(element, suggestion_text, suggestion_id, suggestion_type, unit_id, type);
 			});
 		}
 	};
@@ -250,7 +255,7 @@ function update_unit_client_status(caller, unit_id, client_id, desired_status) {
 }
 
 // button click in CLIENT SUGGESTION LIST (client add/invite)
-function unit_add_client(client_id, unit_id, status = 'manual') {
+function unit_add_client(entity_id, unit_id, status = 'manual', entity_type = 'client') {
 	// ajax query to add user to unit
 	let xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -263,7 +268,7 @@ function unit_add_client(client_id, unit_id, status = 'manual') {
 			refresh_unit_subsection(unit_id, 'client');
 		}
 	};
-	xhttp.open("GET", "ajax/unit-client-insert.php?unitID="+unit_id+"&clientID="+client_id+"&status="+status, true);
+	xhttp.open("GET", "ajax/unit-client-insert.php?unitID="+unit_id+"&entityId="+entity_id+"&entityType="+entity_type+"&status="+status, true);
 	xhttp.send();
 }
 
@@ -333,7 +338,7 @@ function unit_detach(caller, parent_id, child_id) {
  */
 
 // attach autocomplete div to input field
-function autocomplete_setup(input, suggestions, suggestions_ids, unit_id, type = 'client') {
+function autocomplete_setup(input, suggestions, suggestions_ids, suggestion_type, unit_id, type = 'client') {
 	let currentSuggestionFocus = -1;
 	// prepare <div>s for each suggestion
 	let preparedSuggestions = [];
@@ -361,23 +366,21 @@ function autocomplete_setup(input, suggestions, suggestions_ids, unit_id, type =
 				});
 				break;
 			case 'client':
-				/* Client - offer buttoons ADD / INVITE */
+				/* Client & Unit - offer buttoons ADD / INVITE */
 				let inputElement = document.createElement('input');
 				inputElement.type = "button";
 				inputElement.value = "ADD";
 				inputElement.classList.add("suggestion-button", "suggestion-button-add");
-				inputElement.addEventListener('click', function () {
-					unit_add_client(suggestions_ids[i], unit_id, 'manual');
-				});
+				let addFunction = function () { unit_add_client(suggestions_ids[i], unit_id, 'manual', suggestion_type[i]); };
+				inputElement.addEventListener('click', addFunction);
 				suggestion.appendChild(inputElement);
 
 				let inputElement2 = document.createElement('input');
 				inputElement2.type = "button";
 				inputElement2.value = "INVITE";
 				inputElement2.classList.add("suggestion-button", "suggestion-button-invite");
-				inputElement2.addEventListener('click', function () {
-					unit_add_client(suggestions_ids[i], unit_id, 'invite');
-				});
+				addFunction = function () { unit_add_client(suggestions_ids[i], unit_id, 'invite',suggestion_type[i]); };
+				inputElement2.addEventListener('click', addFunction);
 				suggestion.appendChild(inputElement2);
 		}
 
