@@ -356,6 +356,15 @@ footer {
 	border: 1px solid white;
 }
 
+#login-form .session-message {
+	color: black;
+}
+
+#new-registration {
+	color: white;
+	display: inline;
+}
+
 /* ---------- ---------- ---------- LOGOUT FORM ---------- ---------- ---------- */
 #logout-banner {
 	background-color: rgba(0,0,0,0.7);
@@ -404,6 +413,10 @@ table .warn {
 
 .highlight {
 	background-color: darkseagreen;
+}
+
+.warn-highlight {
+	background-color: rgba(201, 119, 119, 0.69);
 }
 
 .table-container {

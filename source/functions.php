@@ -45,7 +45,7 @@ function nav_include($full_width = false) {
     <nav <?php if ($full_width) echo 'class="full-width"'; ?>>
         <a id="mobile-menu-button" onclick="dropdownButtonClicked(this)" href="javascript:void(0)"><strong>MENU</strong></a>
             <div id="nav-core">
-                <?php if ($_SESSION['user_is_client']) {  // CLIENT ?>
+                <?php if (isset($_SESSION['user_is_client']) && $_SESSION['user_is_client']) {  // CLIENT ?>
                 <div class="nav-part">
                     <a class="dropbtn" href="units.php">Prihlasovanie</a>
                 </div>
@@ -55,9 +55,12 @@ function nav_include($full_width = false) {
                 <div class="nav-part">
                     <a class="dropbtn" href="payments.php">Platby</a>
                 </div>
+                <div class="nav-part">
+                    <a class="dropbtn" href="client-modify.php">Správa účtu</a>
+                </div>
                 <?php } else { ?>
 
-                    <?php if ($_SESSION['user_is_accountant']) { // ACCOUNTANT ?>
+                    <?php if (isset($_SESSION['user_is_accountant']) && $_SESSION['user_is_accountant']) { // ACCOUNTANT ?>
                     <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
                         <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Financie</a>
                         <div class="dropdown-content">
@@ -65,17 +68,18 @@ function nav_include($full_width = false) {
                             <a href="item-modify.php">Nová položka</a>
                             <a href="payment-overview.php">Platby</a>
                             <a href="payment-modify.php">Nová platba</a>
+                            <a href="transaction-overview.php">Transakcie</a>
                         </div>
                     </div>
                     <?php } ?>
 
-                    <?php if ($_SESSION['user_is_tutor']) {  // TUTOR (LECTOR) ?>
+                    <?php if (isset($_SESSION['user_is_tutor']) && $_SESSION['user_is_tutor']) {  // TUTOR (LECTOR) ?>
                     <div class="nav-part">
                         <a class="dropbtn" href="unit-admin-overview.php">Skupiny a udalosti</a>
                     </div>
                     <?php } ?>
 
-                    <?php if ($_SESSION['user_is_admin']) { // ADMINISTRATOR ?>
+                    <?php if (isset($_SESSION['user_is_admin']) && $_SESSION['user_is_admin']) { // ADMINISTRATOR ?>
                     <div class="nav-part" onmouseenter="dropdownMenuHoverEnter(this)" onmouseleave="dropdownMenuHoverLeave(this)">
                         <a class="dropbtn" onclick="dropdownButtonClicked(this)" href="javascript:void(0)">Používateľsé účty</a>
                         <div class="dropdown-content">
@@ -181,7 +185,7 @@ function session_result_echo($unset = true) {
     if (isset($_SESSION['result_message']) && $_SESSION['result_message'] != '') {
         $message = $_SESSION['result_message'];
         $message_type = isset($_SESSION['result_message_type']) ? $_SESSION['result_message_type'] : 'info';
-        echo '<p class="' . $message_type . '">' . $message . '</p>';
+        echo '<p class="session-message ' . $message_type . '">' . $message . '</p>';
     }
     // unset values
     if ($unset) {
@@ -217,5 +221,21 @@ function require_user_logged_in() {
     if (!user_logged_in()) {
         include('login-form.php');
         die();
+    }
+}
+
+/**
+ * Translate DB set member of payment.type column to human-readable form.
+ */
+function translate_payment_type($original_name) {
+    switch ($original_name) {
+        case 'ib':
+            return 'IB';
+        case 'cash':
+            return 'hotovosť';
+        case 'credit':
+            return 'kredit';
+        default:
+            return '[neznáme]';
     }
 }

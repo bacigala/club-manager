@@ -205,7 +205,7 @@ function echo_unit_subsection($mysqli, $unit_id) {
 
             // OPTION: view attendance
             if (($row['type'] == 'singleevent' || $row['type'] == 'occurrence') && $row['attendance'] == '1') {
-                $output .= '<form method="post" class="table-form" action="../attendance-admin-overview.php">';
+                $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php">';
                 $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
                 $output .= '<input type="submit" name="" value="Dochádzka" class="main-form-option-button" />';
                 $output .= '</form>';

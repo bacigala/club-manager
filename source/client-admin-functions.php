@@ -72,6 +72,13 @@ function get_client_form($mysqli, $type = 'create') {
         $form_data = $_SESSION['data'];
     }
 
+    $restrict = false;
+    if (user_logged_in() && require_user_level('client', false)) {
+        $form_data = get_client($mysqli, $_SESSION['user_id']);
+        $type = 'modify';
+        $restrict = true;
+    }
+
     ?>
     <form method="post" class="master-form">
 
@@ -81,10 +88,10 @@ function get_client_form($mysqli, $type = 'create') {
             <legend>Osobné údaje</legend>
 
             <label for="name" class="required">Meno</label>
-            <input type="text" name="name" id="name" maxlength="40" value="<?php if ($form_data && isset($form_data['name'])) echo $form_data['name']; ?>">
+            <input type="text" name="name" id="name" maxlength="40" value="<?php if ($form_data && isset($form_data['name'])) echo $form_data['name']; ?>" <?php if ($restrict) echo 'readonly';  ?> >
 
             <label for="surname" class="required">Priezvisko</label>
-            <input type="text" name="surname" id="surname" maxlength="40" value="<?php if ($form_data && isset($form_data['surname'])) echo $form_data['surname']; ?>">
+            <input type="text" name="surname" id="surname" maxlength="40" value="<?php if ($form_data && isset($form_data['surname'])) echo $form_data['surname']; ?>" <?php if ($restrict) echo 'readonly';  ?> >
 
             <label for="email" class="required">Email</label>
             <input type="text" name="email" id="email" maxlength="40" value="<?php if ($form_data && isset($form_data['email'])) echo $form_data['email']; ?>">
@@ -97,19 +104,21 @@ function get_client_form($mysqli, $type = 'create') {
             <input type="text" name="username" id="username" maxlength="40" value="<?php if ($form_data && isset($form_data['username'])) echo $form_data['username']; ?>">
 
             <label for="password" class="required">Heslo<?php if ($type == 'modify') echo ' (prepíše súčasné)'; ?></label>
-            <input type="text" name="password" id="password" maxlength="40" value="<?php if ($form_data && isset($form_data['password'])) echo $form_data['password']; ?>">
+            <input type="password" name="password" id="password" maxlength="40" value="">
+            <label for="password2" class="required">Porvrdenie hesla</label>
+            <input type="password" name="password2" id="password2" maxlength="40" value="">
         </fieldset>
 
         <fieldset>
             <legend>Potvrdenie</legend>
-            <?php if (!isset($_POST['client_id'])) { ?>
+            <?php if ($type == 'create') { ?>
                 <button name="create" type="submit">Vytvoriť účet</button>
                 <button name="cancel" type="submit">Zrušiť</button>
             <?php } else {?>
                 <?php  ?>
                 <button name="modify" type="submit">Uložiť zmeny</button>
                 <button name="cancel" type="submit">Zrušiť zmeny</button>
-                <button name="delete" type="submit">Odstrániť účet</button>
+                <?php if (!$restrict)  { ?> <button name="delete" type="submit">Odstrániť účet</button> <?php } ?>
             <?php } ?>
         </fieldset>
     </form>
@@ -125,13 +134,18 @@ function get_client_form_data($type = 'create') {
     $data = array();
     $error = array();
 
+    $restrict = false;
+    if (user_logged_in() && require_user_level('client', false)) {
+        $restrict = true;
+    }
+
     //osobne udaje
-    if (isset($_POST['name'])) {
+    if (!$restrict && isset($_POST['name'])) {
         $data['name'] = post_escaped('name');
         if ($data['name'] == '') $error['name'] = 'Prosím zadajte meno.';
     }
 
-    if (isset($_POST['surname'])) {
+    if (!$restrict && isset($_POST['surname'])) {
         $data['surname'] = post_escaped('surname');
         if ($data['surname'] == '') $error['surname'] = 'Prosím zadajte priezvisko.';
     }
@@ -144,13 +158,16 @@ function get_client_form_data($type = 'create') {
         if ($data['username'] == '') $error['username'] = 'Prosím zadajte prihlasovacie meno.';
     }
 
-    if (post_escaped('password') != '') {
-        $data['password'] = post_escaped('password');
+    // do not allow empty password for new account
+    if ($type == 'create' && (post_escaped('password') == '')) {
+        $error['password'] = 'Prosím zadajte heslo.';
     }
 
-    // do not allow empty password for new account
-    if ($type == 'create' && (!isset($data['password']) || $data['password'] == '')) {
-        $error['password'] = 'Prosím zadajte heslo.';
+    // check if password and password verificaiion field match
+    if (post_escaped('password') != post_escaped("password2")) {
+        $error['password_verification'] = "Heslo a potvrdenie hesla sa nezhodujú.";
+    } else {
+        $data['password'] = post_escaped('password');
     }
 
     // return data
@@ -173,11 +190,18 @@ function handle_client_modify($mysqli) {
     $account_id = 0;
     if (isset($_POST['client_id'])) $account_id = intval(post_escaped('client_id'));
 
+    $restrict = false;
+    if (user_logged_in() && require_user_level('client', false)) {
+        $account_id = $_SESSION['user_id'];
+        $restrict = true;
+    }
+
     if ($request_type) {
         try {
             switch ($request_type) {
                 case 'create':
                     // get data
+                    if ($restrict) return;
                     $data = get_client_form_data();
                     if (isset($_SESSION['error']) && !empty($_SESSION['error'])) {
                         session_result('error', "Účet nebolo možné vytvoriť.");
@@ -185,7 +209,8 @@ function handle_client_modify($mysqli) {
                     }
 
                     // query
-                    $query = "INSERT INTO client SET author_id=" . $_SESSION['user_id'];
+                    if (user_logged_in()) $query = "INSERT INTO client SET author_id=" . $_SESSION['user_id'];
+                    else $query = "INSERT INTO client SET author_id=" . 1;
                     foreach ($data AS $key => $value) {
                         if ($key == 'password') {
                             $query .= ", $key=SHA2('$value',256)";
@@ -228,6 +253,7 @@ function handle_client_modify($mysqli) {
                     session_result('success', 'Účet bol upravený.');
                     break;
                 case 'delete':
+                    if ($restrict) return;
                     // query
                     $query = "DELETE FROM client WHERE id=" . $account_id ;
                     if (!$mysqli->query($query)) {
@@ -250,7 +276,12 @@ function handle_client_modify($mysqli) {
             } else {
                 // go to account-overview overview
                 unset($_SESSION['data']);
-                header("Location: client-overview.php?highlight=$account_id");
+
+                if ($restrict) header("Location: client-modify.php");
+                else if (user_logged_in()) header("Location: client-overview.php?highlight=$account_id");
+                else {
+                    header("Location: index.php");
+                }
             }
             exit();
         }

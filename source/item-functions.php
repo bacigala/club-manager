@@ -69,7 +69,7 @@ function db_item_delete($mysqli, $item_id) {
  * @param mysqli $mysqli
  * @param int $highlight_id id of te item <tr> to highlight
  */
-function get_item_list($mysqli, $highlight_id = 0) {
+function get_item_list($mysqli, $highlight_id = null) {
     $query  = "SELECT item.id, item.name, item.price, item.start_date, item.end_date, unit.name AS 'unit_name'"
                 . " FROM item LEFT JOIN unit ON (item.unit_id = unit.id)"
                 . " ORDER BY name ASC, start_date DESC";

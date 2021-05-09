@@ -31,7 +31,7 @@
                 <th>Do</th>
                 <th>Možnosti</th>
             </tr>
-            <?php get_item_list($mysqli, intval(get_escaped('highlight'))); ?>
+            <?php get_item_list($mysqli, isset($_GET['highlight']) ? intval(get_escaped('highlight')) : null); ?>
         </table>
     </div>
 </section>

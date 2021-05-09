@@ -23,7 +23,7 @@ function unit_get_attendance($mysqli) {
 			$output .= '<td>' . $row['surname'] . '</td>';
 			$output .= '<td><form method="post" class="table-form" action="client-modify.php">';
 			$output .= '<input type="hidden" name="client_id" value="' . $row['client_id'] . '" />';
-			$output .= '<input type="checkbox" onclick="toogle_present(this)" id="' . $row['id'] . '" name="vehicle1" value="Bike"' . ($row['present'] == '1' ? ' checked ' : '') . '>';
+			$output .= '<input type="checkbox" onclick="toogle_present(this)" id="' . $row['id'] . '" ' . ($row['present'] == '1' ? ' checked ' : '') . '>';
 			$output .= '<label for="' . $row['id'] . '"> Present</label><br>';
 			$output .= '</form></td>';
 
