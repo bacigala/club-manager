@@ -88,14 +88,6 @@ function update_unit_detail(caller, unit_id) {
 	xhttp.send();
 }
 
-/**
- * todo Delete the unit, offer choice to delete all or just 'close'.
- */
-function unit_delete(unit_id) {
-	window.alert("delete unit " + unit_id);
-}
-
-
 
 /*
  *	UNIT ACCORDION SUBSECTIONS - lectors / clients / units
@@ -245,6 +237,9 @@ function update_unit_client_status(caller, unit_id, client_id, desired_status) {
 	let xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState === 4 && this.status === 200) {
+			if (this.responseText !== '') {
+				window.alert("ERROR\n" + this.responseText);
+			}
 			// ajax ok
 			caller.disabled = false;
 			refresh_unit_subsection(unit_id, 'client');

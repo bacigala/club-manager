@@ -258,3 +258,41 @@ function translate_unit_type($original_name) {
             return $original_name;
     }
 }
+
+
+/**
+ * Verify user right to modify unit.
+ * @param $die bool whether to die if requirement is not met
+ */
+function require_user_editor($mysqli, $unit_id, $die = true) {
+    $check_ok = false;
+
+    // is user admin ?
+    if (require_user_level('admin', false)) $check_ok = true;
+
+    // is user unit author?
+    if (!$check_ok) {
+        $logged_in_user_id = $_SESSION['user_id'];
+        $query = "SELECT * FROM unit WHERE id = $unit_id AND author_id='$logged_in_user_id'";
+        $result = db_query($mysqli, $query);
+        if (!is_null($result) && $result->num_rows > 0) {
+            $check_ok = true;
+        }
+    }
+
+    // is user editor?
+    if (!$check_ok) {
+        $logged_in_user_id = $_SESSION['user_id'];
+        $query = "SELECT * FROM unit JOIN unit_account ON (unit.id = unit_account.unit_id) WHERE unit.id = $unit_id AND account_id='$logged_in_user_id' AND is_editor = TRUE";
+        $result = db_query($mysqli, $query);
+        if (!is_null($result) && $result->num_rows > 0) {
+            $check_ok = true;
+        }
+    }
+
+    if ($die && !$check_ok) {
+        echo 'You do not have a permission to access this page/function.';
+        die();
+    }
+    return $check_ok;
+}

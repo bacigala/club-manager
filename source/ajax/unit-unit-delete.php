@@ -8,6 +8,8 @@
 	$parent_id = post_escaped("parentID");
 	$child_id = post_escaped("childID");
 
+    require_user_editor($mysqli, $parent_id);
+
 	// fetch type of child unit
     $type = '';
     $query = "SELECT type FROM unit WHERE id='$child_id'";

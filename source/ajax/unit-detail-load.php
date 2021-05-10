@@ -117,4 +117,3 @@ if (!is_null($result) && $result->num_rows > 0) {
 	}
 	$result->free();
 }
-

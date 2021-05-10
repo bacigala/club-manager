@@ -1,13 +1,9 @@
 <?php
 
-    // user needs to be tutor
     session_start();
-    if (!isset($_SESSION['user_is_tutor']) || !$_SESSION['user_is_tutor']) {
-        echo 'Na prístup k tejto stránke nemáte oprávnenie.';
-        die();
-    }
-
-	include('../db.php');
+    include('../functions.php');
+    require_user_level('lector');
+    include('../db.php'); /* @var mysqli $mysqli */
 
 	// get request parameters
 	$unit_name = $_REQUEST["unitName"];

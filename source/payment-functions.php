@@ -183,7 +183,7 @@ function get_payment_form_data() {
 
     // item
     $data['item_id'] = intval(post_escaped('item_id'));
-    if ($data['item_id'] < 1) $error['item_id'] = 'Prosím zvoľte položku.';
+    if ($data['item_id'] < 0) $error['item_id'] = 'Prosím zvoľte položku.';
 
     // client
     $data['client_id'] =  intval(post_escaped('client_id'));
@@ -336,7 +336,7 @@ function get_item_options($mysqli, $selected = false) {
     if (!is_null($result) && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $output = '<option value="' . $row['id'] . '" ';
-            if ($selected && $selected == $row['id']) $output .= 'selected';
+            if ($selected && ($selected == $row['id'])) $output .= 'selected';
             $output .= '>' . $row['name'] . '</option>';
             echo $output;
         }

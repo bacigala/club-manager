@@ -1,38 +1,38 @@
 <?php
 
-function input_date_format($date_string) {
-	$date = date_create($date_string);
-	return date_format($date, "Y-m-d") . 'T' . date_format($date, "H:i");
-}
-
-	session_start();
-	include('../db.php');
+    session_start();
+    include('../functions.php');
+    require_user_level('lector');
+    include('../db.php'); /* @var mysqli $mysqli */
 
 	$id = $_REQUEST["unitID"];
 	$property = $_REQUEST["property"];
 	$value = $_REQUEST["value"];
 
- $query = "UPDATE unit SET $property = '$value' WHERE id=$id";
-		if (!($result = $mysqli->query($query))) {
-			//echo 'nevyslo to';
-		} else {
-			//echo $value;
-		}
+	$status_ok = false;
 
-if ($property == 'start_datetime' || $property == 'end_datetime') {
-	$value = input_date_format($value);
-}
+    if (!require_user_editor($mysqli, $id, false)) {
+        echo "Nemate opravnenie.";
+        die();
+    }
 
-	$dom = new DOMDocument();
-		$dom->encoding = 'utf-8';
-		$dom->xmlVersion = '1.0';
-		$root = $dom->createElement('DBtransaction');
-	$child_node_result_status = $dom->createElement('status', 'OK');
-		$root->appendChild($child_node_result_status);
-	$child_node_result_message = $dom->createElement('message', 'V+Setko oukej');
-		$root->appendChild($child_node_result_message);
-	$child_node_new_value = $dom->createElement('value', $value);
-		$root->appendChild($child_node_new_value);
-	$dom->appendChild($root);
+    $query = "UPDATE unit SET $property = '$value' WHERE id=$id";
+    $status_ok = ($result = $mysqli->query($query));
+
+    if ($property == 'start_datetime' || $property == 'end_datetime') {
+        $value = input_date_format($value);
+    }
+
+    $dom = new DOMDocument();
+    $dom->encoding = 'utf-8';
+    $dom->xmlVersion = '1.0';
+    $root = $dom->createElement('DBtransaction');
+    $child_node_result_status = $dom->createElement('status', $status_ok ? 'OK' : "FAIL");
+    $root->appendChild($child_node_result_status);
+    $child_node_result_message = $dom->createElement('message', '');
+    $root->appendChild($child_node_result_message);
+    $child_node_new_value = $dom->createElement('value', $value);
+    $root->appendChild($child_node_new_value);
+    $dom->appendChild($root);
 	
 	echo $dom->saveXml();

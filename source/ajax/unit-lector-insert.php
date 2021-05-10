@@ -9,6 +9,11 @@
     $unit_id = post_escaped("unitID");
     $lector_id = post_escaped("lectorID");
 
+    if (!require_user_editor($mysqli, $unit_id, false)) {
+        echo "Nemate opravnenie.";
+        die();
+    }
+
 	// query DB
 	$query = "INSERT INTO unit_account SET unit_id=$unit_id, account_id = $lector_id";
     if (!$mysqli->query($query))

@@ -7,7 +7,7 @@
     include('functions.php');       // basic functions
     include('login-verify.php');    // login/logout
     header_include();
-    require_user_logged_in(true);
+    require_user_logged_in();
     nav_include();
 ?>
 

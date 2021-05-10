@@ -32,11 +32,14 @@ function get_units_of_client_tr($mysqli, $type) {
                 case 'approve':
                 case 'accept':
                     $output .= 'Ste prihlásený.</td>';
-                    $output .= '<td>' . '' . '</td></tr>';
+                    $output .= '<td>' . $form_begin;
+                    //$output .= '<button name="request_type" type="submit" value="leave" class="main-form-option-button">Odhlásiť sa</button>';
+                    $output .=  $form_end;
+                    $output .= '</td></tr>';
                     $active .= $output;
                     break;
                 case 'invite':
-                    $output .= 'Ste pozvaný.</td>'; //todo: prijat moze len ak je este volne miesto
+                    $output .= 'Ste pozvaný.</td>';
                     $output .= '<td>' . $form_begin;
                     $output .= '<button name="request_type" type="submit" value="accept" class="main-form-option-button">Prijať</button>';
                     $output .= '<button name="request_type" type="submit" value="refuse" class="main-form-option-button">Odmietnuť</button>';
@@ -118,7 +121,7 @@ function get_units_of_client_tr($mysqli, $type) {
 
 function record_payments($mysqli, $unit_id) {
     $answer = true;
-    $query  = " SELECT * FROM item WHERE unit_id = $unit_id";
+    $query  = " SELECT * FROM item WHERE unit_id = $unit_id AND start_date>=NOW()";
     $result = db_query($mysqli, $query);
     if (!is_null($result)) {
         if ($result->num_rows == 1) {
@@ -215,8 +218,9 @@ function handle_course_request($mysqli) {
                     $_SESSION['result_message_type'] = 'success';
                     $_SESSION['result_message'] = 'Pozvánka ' . ($request_type == 'accept' ? 'prijatá' : 'odmietnutá') . '.';
                     break;
+                case 'leave':
                 case 'retract':
-                    $query = "UPDATE unit_client SET status='" . $request_type . "', date_leave=NOW() WHERE unit_id=" . $unit_id . " AND id=" . $unit_client_id . " AND client_id=" . $_SESSION['user_id'] . " AND status='request'";
+                    $query = "UPDATE unit_client SET status='" . $request_type . "', date_leave=NOW() WHERE unit_id=" . $unit_id . " AND id=" . $unit_client_id . " AND client_id=" . $_SESSION['user_id'];
                     if (!($result = $mysqli->query($query))) {
                         $mysqli->rollback();
                         $_SESSION['result_message_type'] = 'error';
@@ -227,6 +231,7 @@ function handle_course_request($mysqli) {
                     $mysqli->commit();
                     $_SESSION['result_message_type'] = 'success';
                     $_SESSION['result_message'] = 'Žiadosť o prihlásenie bola stiahnutá.';
+                    if ($request_type == 'leave') $_SESSION['result_message'] = 'Boli ste odhlásený.';
                     break;
                 case 'join':
 
@@ -299,7 +304,6 @@ function handle_course_request($mysqli) {
                     $_SESSION['result_message_type'] = 'success';
                     $_SESSION['result_message'] = 'Žiadosť o prihlásenie bola odoslaná.';
                     break;
-
             }
         } catch (mysqli_sql_exception $exception) {
             // error

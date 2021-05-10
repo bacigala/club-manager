@@ -1,14 +1,9 @@
 <?php
 
-    // user needs to be tutor (lector)
     session_start();
-    if (!isset($_SESSION['user_is_tutor']) || !$_SESSION['user_is_tutor']) {
-        echo 'Na prístup k tejto stránke nemáte oprávnenie.';
-        die();
-    }
-
-	include('../db.php');
-	include('../functions.php');
+    include('../functions.php');
+    require_user_level('lector');
+    include('../db.php'); /* @var mysqli $mysqli */
 
 	// get GET parameters
 	$unit_id = $_REQUEST["unitID"];
@@ -24,7 +19,6 @@
         case 'unit':
             echo_unit_subsection($mysqli, $unit_id);
             break;
-
     }
 
 function echo_lector_subsection($mysqli, $unit_id) {
@@ -195,17 +189,15 @@ function echo_unit_subsection($mysqli, $unit_id) {
             $output .= '<td>';
 
             // OPTION: detach event/ocurrence from course/event
-            //if ($row['author_id'] == $_SESSION['user_id']) { //todo mozno my mohol aj ked je len eitor... !skupiny!
-                $output .= '<form method="post" class="table-form" action="../unit-admin-overview.php">';
-                $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
-                $button_text = ($row['type'] == 'occurrence' ? 'Odstrániť' : 'Vyradiť zo skupiny');
-                $output .= "<input type='button' value='{$button_text}' onclick='unit_detach(this, {$unit_id}, {$row['id']})' class='main-form-option-button'/>";
-                $output .= '</form>';
-            //}
+            $output .= '<form method="post" class="table-form" action="../unit-admin-overview.php" style="display: inline">';
+            $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
+            $button_text = ($row['type'] == 'occurrence' ? 'Odstrániť' : 'Vyradiť zo skupiny');
+            $output .= "<input type='button' value='{$button_text}' onclick='unit_detach(this, {$unit_id}, {$row['id']})' class='main-form-option-button'/>";
+            $output .= '</form>';
 
             // OPTION: view attendance
             if (($row['type'] == 'singleevent' || $row['type'] == 'occurrence') && $row['attendance'] == '1') {
-                $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php">';
+                $output .= '<form method="post" class="table-form" action="attendance-admin-overview.php" style="display: inline">';
                 $output .= '<input type="hidden" name="unit_id" value="' . $row['id'] . '" />';
                 $output .= '<input type="submit" name="" value="Dochádzka" class="main-form-option-button" />';
                 $output .= '</form>';
@@ -216,7 +208,6 @@ function echo_unit_subsection($mysqli, $unit_id) {
 
             // OPTION: view items
             $output .= '<button class="main-form-option-button" onclick="event.stopPropagation(); window.location.href = \'item-overview.php?unitID=' . $row['id'] . '\';">Položky</button>';
-
 
             $output .= '</td>'; // options
             $output	.= '</tr>'; // header <tr> of unit
@@ -260,5 +251,4 @@ function echo_unit_subsection($mysqli, $unit_id) {
 
     $output .= '</table>';
     echo $output;
-
 }

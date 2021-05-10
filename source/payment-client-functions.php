@@ -5,8 +5,9 @@ include_once('functions.php');
 function get_payment_table_tr($mysqli) {
     $credit = get_credit_balance($mysqli);
 
-    $query  = "SELECT payment.type, payment.id, item.id AS 'itemID', item.name, unit_price, pay_datetime, create_datetime, amount, transaction_id, transaction.name AS 'transaction_name'"
+    $query  = "SELECT unit.name AS 'unitname', payment.type, payment.id, item.id AS 'itemID', item.name, unit_price, pay_datetime, create_datetime, amount, transaction_id, transaction.name AS 'transaction_name'"
     . " FROM payment JOIN item ON (payment.item_id = item.id)"
+    . " LEFT JOIN unit ON (item.unit_id = unit.id)"
     . " LEFT JOIN transaction ON (payment.transaction_id = transaction.id)"
     . " WHERE payment.client_id = " . $_SESSION['user_id']
     . " ORDER BY pay_datetime, transaction_name, create_datetime DESC";
@@ -18,7 +19,7 @@ function get_payment_table_tr($mysqli) {
         // selection
         $output .= '<td onclick="highlight_transaction(' . $row['transaction_name'] . ')">' . (isset($row['transaction_id']) ? ('Transakcia ' . $row['transaction_name']) : (isset($row['pay_datetime']) ? "" : '<input type="checkbox" class="payment_checkbox" id="' . $row['id'] . '">')) . '</td>';
         // name
-        $output .= '<td>' . $row['name'] . '</td>';
+        $output .= '<td>' . $row['name'] .  (isset($row['unitname']) ? (' (' . $row['unitname'] . ')') : "")  . '</td>';
         // date of creation
         $output .= '<td>' . date_format(date_create($row['create_datetime']), "d.m.Y H:i") . '</td>';
         // amount

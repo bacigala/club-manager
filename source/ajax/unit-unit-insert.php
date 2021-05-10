@@ -1,17 +1,15 @@
 <?php
 
-    // user needs to be tutor
     session_start();
-    if (!isset($_SESSION['user_is_tutor']) || !$_SESSION['user_is_tutor']) {
-        echo 'Na prístup k tejto stránke nemáte oprávnenie.';
-        die();
-    }
+    include('../functions.php');
+    require_user_level('admin');
+    include('../db.php'); /* @var mysqli $mysqli */
 
-	include('../db.php');
-
-    // get request parameters
+    // parameters
 	$parent_id = $_REQUEST["parentID"];
 	$child_id = $_REQUEST["childID"];
+
+    require_user_editor($mysqli, $parent_id);
 
 	// query DB
 	$query = "INSERT INTO unit_unit SET parent_id=$parent_id, child_id = $child_id, author_id={$_SESSION['user_id']}";

@@ -243,7 +243,7 @@ function handle_client_modify($mysqli) {
                         break;
                     }
                     // query
-                    $query = "UPDATE client SET author_id=" . $_SESSION['user_id'];
+                    $query = "UPDATE client SET author_id='1' ";
                     foreach ($data AS $key => $value) {
                         if ($key == 'password') {
                             $query .= ", $key=SHA2('$value',256)";
@@ -253,7 +253,7 @@ function handle_client_modify($mysqli) {
                     }
                     $query .= ' WHERE id=' . $account_id ;
                     if (!$mysqli->query($query)) {
-                        session_result('error', "Účet nebolo možné upraviť. (DB ERROR)");
+                        session_result('error', "Účet nebolo možné upraviť. (DB ERROR MODIFY)");
                         break;
                     }
 
