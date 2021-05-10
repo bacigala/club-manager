@@ -30,7 +30,7 @@ Tento report obsahuje kumulatívne údaje, v súvislosti s prezentáciou fináln
 	- vidí a upravuje používateľské účty a práva
 
 ## Chyby, výzvy, komplikácie, neimplementované časti, záver
-I keď je aplikácia implementovaná v pôvodne plánovanom rozsahu, je (stále) čo vylepšovať i pridávať. Napríklad kromadné účtovanie položiek klientom alebo možnosť pridať hromadne na kurz len podmnožinu zo skupiny klientov.
+I keď je aplikácia implementovaná v pôvodne plánovanom rozsahu, je (stále) čo vylepšovať i pridávať. Napríklad hromadné účtovanie položiek klientom alebo možnosť pridať hromadne na kurz len podmnožinu zo skupiny klientov.
 
 V aplikácii som zo začiatku zvolil "štandardny PHP prístup" k manipulácii s databázou, teda vždy ku každej upravovanej časti vznikol formulár, ktorý sa vyhodnocuje niekoľkými refresh-mi stránky (najprv je načítaný s prednastavenými hodnotami, potom odoslaný cez POST, potom sú hodnoty v POST vyhodnotené a POST odstránený a následne je znovu načítaný formulár, napríklad ak niečo nevyšlo). Toto som oľutoval neskôr, keď som pri implementácii častí umožňujúcich lektorom manipuláciu s udalosťami zvolil AJAX prístup, čo bolo pohodlnejšie na implementáciu, pre komunikáciu efektívnejšie a tiež je to krajšie v UI. Kebyže vytváram projek od začiatku, s použitím PHP, jeho účel by som obmedzil len na prvotné načítanie stránky a tvorbu odpovedí AJAX request-ov.
 
